@@ -1,0 +1,60 @@
+{
+  "name": "gide-graphql-server",
+  "version": "0.0.1",
+  "description": "Servidor de GraphQL para GIDE Bienes Raices",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/USERNAME/REPOSITORY.git"
+  },
+  "author": "RamiroEda",
+  "keywords": [],
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --config nodemon.json src/index.ts",
+    "start": "tsc && node dist/index.js",
+    "test": "mocha --opts tests/mocha.opts",
+    "test-watch": "mocha --opts tests/mocha.opts --watch",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "lint-fix": "tslint -c tslint.json 'src/**/*.ts' --fix",
+    "migrations:init": "ts-node src/migrations/init_database.ts",
+    "migrations:clean": "ts-node src/migrations/index.ts down --all"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.18",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^15.0.3",
+    "chai": "^4.3.4",
+    "mocha": "^8.4.0",
+    "nodemon": "^2.0.7",
+    "ts-node": "^9.1.1",
+    "tslint": "^5.8.0",
+    "typescript": "^4.2.4"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "dependencies": {
+    "@typegoose/typegoose": "^7.6.0",
+    "apollo-server": "^2.24.0",
+    "apollo-server-express": "^2.24.0",
+    "class-validator": "^0.13.1",
+    "graphql": "^15.5.0",
+    "mongoose": "^5.11.1",
+    "node": "^16.1.0",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^1.1.1"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "bugs": {
+    "url": "https://github.com/USERNAME/REPOSITORY/issues"
+  },
+  "homepage": "https://github.com/USERNAME/REPOSITORY#readme"
+}

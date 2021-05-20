@@ -1,13 +1,15 @@
 import { mongoose } from "@typegoose/typegoose";
-import { DATABASE_URL } from "../constants";
-import { CityResolver } from "../resolvers/city.resolver";
-import { StateResolver } from "../resolvers/state.resolver";
-import states = require("./data/mexico_estados.json");
-import municipalities = require("./data/mexico_estados_municipios.json");
+import { ADMIN_PASSWORD, DATABASE_URL, JWT_SECRET } from "../constants";
+import states = require("./data/states.json");
+import cities = require("./data/cities.json");
+import { UserModel } from "../models/user.model";
+import { AuthRole } from "../models/context.model";
+import bcrypt = require('bcrypt');
+import assert = require("assert");
 
 
 async function initDatabase(){
-    await mongoose.connect(DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
+    mongoose.connect(DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
         if(err){
             console.error(err);
         }
@@ -16,6 +18,7 @@ async function initDatabase(){
 
     await initStateCollection();
     await initCitiesCollection();
+    await initAdminAccount();
 
 
     console.log("Base de datos iniciada");
@@ -32,18 +35,23 @@ async function initStateCollection() {
         console.error(e);
     }
 
-    const stateResolver = new StateResolver();
-
-    for (const state of states) {
-        await stateResolver.addState({
-            name: state.nombre,
+    const insertedDocuments = await mongoose.connection.collection("states").insertMany(states.map((state) => {
+        return {
+            _id: mongoose.Types.ObjectId(state._id.$oid),
+            cities: state.cities.map((cityId) => mongoose.Types.ObjectId(cityId.$oid)),
+            createdAt: new Date(state.createdAt.$date),
+            isActive: state.isActive,
             location: {
-                latitude: 0,
-                longitude: 1
+                type: state.location.type,
+                coordinates: [state.location.coordinates[0], state.location.coordinates[1]]
             },
-            zoom: 12
-        });
-    }
+            name: state.name,
+            updatedAt: new Date(state.updatedAt.$date),
+            zoom: state.zoom
+        };
+    }));
+
+    assert(insertedDocuments.insertedCount === states.length,  `Se han insertado ${insertedDocuments.insertedCount} de ${states.length}`);
 }
 
 async function initCitiesCollection() {
@@ -53,25 +61,41 @@ async function initCitiesCollection() {
         console.error(e);
     }
     
-    const cityResolver = new CityResolver();
-    const stateResolver = new StateResolver();
+    const insertedDocuments = await mongoose.connection.collection("cities").insertMany(cities.map((city) => {
+        return {
+            _id: mongoose.Types.ObjectId(city._id.$oid),
+            createdAt: new Date(city.createdAt.$date),
+            isActive: city.isActive,
+            location: {
+                type: city.location.type,
+                coordinates: [city.location.coordinates[0], city.location.coordinates[1]]
+            },
+            name: city.name,
+            updatedAt: new Date(city.updatedAt.$date),
+            zones: city.zones.map((zoneId) => mongoose.Types.ObjectId(zoneId.$oid)),
+            zoom: city.zoom,
+            state: mongoose.Types.ObjectId(city.state.$oid)
+        };
+    }));
 
-    const states = await stateResolver.states({});
 
-    for (const state of states) {
-        console.log(state._id, state.name);
-        
-        for (const municipality of municipalities[state.name]) {
-            await cityResolver.addCity({
-                name: municipality,
-                location: {
-                    latitude: 0,
-                    longitude: 1
-                },
-                zoom: 12,
-                zoneIds: [],
-                stateId: state._id
-            });
-        }
+    assert(insertedDocuments.insertedCount === cities.length,  `Se han insertado ${insertedDocuments.insertedCount} de ${cities.length}`);
+}
+
+
+async function initAdminAccount() {
+    try{
+        await UserModel.deleteOne({
+            username: "GIDE_ADMIN"
+        });
+    }catch(e){
+        console.error(e);
     }
+
+    await UserModel.create({
+        username: "GIDE_ADMIN",
+        name: "Administrador",
+        role: AuthRole.ADMIN,
+        password: bcrypt.hashSync(ADMIN_PASSWORD, 10)
+    });
 }

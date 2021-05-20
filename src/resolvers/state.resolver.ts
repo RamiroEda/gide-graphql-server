@@ -1,9 +1,10 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
-import { Arg, Args, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { StatesArguments } from "../arguments/states.arguments";
 import { StateInput } from "../inputs/state.input";
 import { City } from "../models/city.model";
+import { AuthRole } from "../models/context.model";
 import { Location } from "../models/location.model";
 import { State, StateModel } from "../models/state.model";
 import { CityResolver } from "./city.resolver";
@@ -36,7 +37,7 @@ export class StateResolver {
         return doc;
     }
 
-
+    @Authorized([AuthRole.ADMIN])
     @Mutation(returns => State)
     async addState(@Arg("data") data : StateInput) : Promise<State>{
         return await StateModel.create({

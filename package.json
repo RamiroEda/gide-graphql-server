@@ -27,8 +27,9 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.18",
+    "@types/jsonwebtoken": "^8.5.1",
     "@types/mocha": "^8.2.2",
-    "@types/node": "^15.0.3",
+    "@types/node": "^15.3.0",
     "chai": "^4.3.4",
     "mocha": "^8.4.0",
     "nodemon": "^2.0.7",
@@ -41,12 +42,17 @@
   },
   "dependencies": {
     "@typegoose/typegoose": "^7.6.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/randomstring": "^1.1.6",
     "apollo-server": "^2.24.0",
     "apollo-server-express": "^2.24.0",
+    "bcrypt": "^5.0.1",
     "class-validator": "^0.13.1",
     "graphql": "^15.5.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.1",
     "node": "^16.1.0",
+    "randomstring": "^1.2.1",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1"
   },

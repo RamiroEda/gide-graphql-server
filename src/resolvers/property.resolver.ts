@@ -1,13 +1,14 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
-import { Arg, Args, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { PropertiesArguments } from "../arguments/properties.arguments";
 import { PropertyInput } from "../inputs/property.input";
-import { City } from "../models/city.model";
+import { City, CityModel } from "../models/city.model";
+import { AuthRole } from "../models/context.model";
 import { Location, locationToGeoJSON } from "../models/location.model";
 import { Property, PropertyModel } from "../models/property.model";
 import { PropertyStatus } from "../models/property_status.model";
-import { State } from "../models/state.model";
+import { State, StateModel } from "../models/state.model";
 import { Zone } from "../models/zone.model";
 import { CityResolver } from "./city.resolver";
 import { StateResolver } from "./state.resolver";
@@ -62,8 +63,22 @@ export class PropertyResolver {
         return doc;
     }
 
+    @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Property)
     async addProperty(@Arg("data") data : PropertyInput) : Promise<Property>{
+        const stateDocument = await StateModel.findById(data.stateId);
+
+        if(!stateDocument) throw Error("El identificador del Estado no existe.");
+        if(!stateDocument.cities.includes(data.cityId)) throw Error("La Ciudad seleccionada no se encuentra dentro del Estado.");
+
+        const cityDocument = await CityModel.findById(data.cityId);
+
+        if(!cityDocument) throw Error("El identificador de la Ciudad no existe.");
+        if(data.zoneId){
+            if(!cityDocument.zones.includes(data.zoneId)) throw Error("La Zona seleccionada no se encuentra dentro de la Ciudad.");
+        }
+
+
         return await PropertyModel.create({
             ...data,
             city: data.cityId,

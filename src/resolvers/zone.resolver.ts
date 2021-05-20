@@ -1,8 +1,9 @@
 import assert from "assert";
-import { Arg, Args, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Args, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { ZonesArguments } from "../arguments/zones.arguments";
 import { ZoneInput } from "../inputs/zone.input";
 import { CityModel } from "../models/city.model";
+import { AuthRole } from "../models/context.model";
 import { locationToGeoJSON } from "../models/location.model";
 import { Zone, ZoneModel } from "../models/zone.model";
 
@@ -34,6 +35,7 @@ export class ZoneResolver {
         return doc;
     }
 
+    @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Zone)
     async addZone(@Arg("data") data : ZoneInput) : Promise<Zone>{
         const doc = await ZoneModel.create({

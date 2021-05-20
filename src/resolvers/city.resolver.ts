@@ -1,9 +1,10 @@
 import { DocumentType } from "@typegoose/typegoose/lib/types";
 import assert from "assert";
-import { Arg, Args, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { CitiesArguments } from "../arguments/cities.arguments";
 import { CityInput } from "../inputs/city.input";
 import { City, CityModel } from "../models/city.model";
+import { AuthRole } from "../models/context.model";
 import { Location, locationToGeoJSON } from "../models/location.model";
 import { State, StateModel } from "../models/state.model";
 import { Zone } from "../models/zone.model";
@@ -39,6 +40,7 @@ export class CityResolver {
     }
 
 
+    @Authorized([AuthRole.ADMIN])
     @Mutation(returns => City)
     async addCity(@Arg("data") data : CityInput) : Promise<City>{
         const doc = await CityModel.create({

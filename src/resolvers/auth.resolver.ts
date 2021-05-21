@@ -39,12 +39,8 @@ export class AuthResolver {
     async logout(@Ctx() context : GideContext) : Promise<boolean>{
         if(AuthModel.deleteOne({
             $and: [
-                {
-                    userId: context.userId
-                },
-                {
-                    accessToken: context.accessToken
-                }
+                { userId: context.auth.userId },
+                { accessToken: context.auth.accessToken }
             ]
         })){
             return true;

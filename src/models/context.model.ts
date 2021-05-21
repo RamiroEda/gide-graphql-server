@@ -1,6 +1,7 @@
+import { Auth } from "./auth.model";
+
 export interface GideContext {
-    accessToken: string;
-    userId: string;
+    auth?: Auth;
 }
 
 

@@ -1,10 +1,10 @@
 import { DocumentType } from "@typegoose/typegoose/lib/types";
 import assert from "assert";
-import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { CitiesArguments } from "../arguments/cities.arguments";
 import { CityInput } from "../inputs/city.input";
 import { City, CityModel } from "../models/city.model";
-import { AuthRole } from "../models/context.model";
+import { AuthRole, GideContext } from "../models/context.model";
 import { Location, locationToGeoJSON } from "../models/location.model";
 import { State, StateModel } from "../models/state.model";
 import { Zone } from "../models/zone.model";
@@ -14,8 +14,14 @@ import { ZoneResolver } from "./zone.resolver";
 @Resolver(City)
 export class CityResolver {
     @Query(returns => [City])
-    async cities(@Args() { only } : CitiesArguments) : Promise<City[]>{
+    async cities(@Args() { only } : CitiesArguments, @Ctx() context : GideContext) : Promise<City[]>{
         let ref = CityModel.find();
+
+        if(!context.auth){
+            ref = ref.find({
+                isActive: true
+            });
+        }
 
         if(only){
             ref = ref.find({
@@ -80,9 +86,9 @@ export class CityResolver {
     }
 
     @FieldResolver(returns => [Zone], {nullable: true})
-    async zones(@Root() city : DocumentType<City>) : Promise<Zone[]>{
+    async zones(@Root() city : DocumentType<City>, @Ctx() context : GideContext) : Promise<Zone[]>{
         return await new ZoneResolver().zones({
             only: city.zones.map<string>((zoneRef) => zoneRef.toString())
-        });
+        }, context);
     }
 }

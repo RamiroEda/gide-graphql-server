@@ -1,21 +1,12 @@
 import { AuthChecker } from "type-graphql";
 import { GideContext, AuthRole } from "./models/context.model";
-import { AuthModel } from "./models/auth.model";
 import { UserModel } from "./models/user.model";
 
 export const customAuthChecker: AuthChecker<GideContext, AuthRole> = async ({ context }, roles) : Promise<boolean> => {
-    const authBelongsToUser = await AuthModel.exists({
-        $and: [
-            {
-                userId: context.userId
-            },
-            {
-                accessToken: context.accessToken
-            }
-        ]
-    });
+    if(!context.auth) return false;
+    if(context.auth && roles.length === 0) return true;
 
-    const userDocument = await UserModel.findById(context.userId);
+    const userDocument = await UserModel.findById(context.auth.userId);
 
-    return authBelongsToUser && roles.includes(userDocument.role);
+    return context.auth && roles.includes(userDocument.role);
 };

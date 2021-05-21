@@ -1,11 +1,9 @@
-import { Ref } from "@typegoose/typegoose";
 import { Field, ID, InputType } from "type-graphql";
-import { City } from "../models/city.model";
 import { Zone } from "../models/zone.model";
 import { LocationInput } from "./location.input";
 
 @InputType()
-export class ZoneInput implements Omit<Zone, "_id" | "createdAt" | "updatedAt" | "location" | "city">{
+export class ZoneInput implements Omit<Zone, "_id" | "createdAt" | "updatedAt" | "location" | "isActive" | "city">{
     @Field()
     name: string;
 
@@ -15,6 +13,6 @@ export class ZoneInput implements Omit<Zone, "_id" | "createdAt" | "updatedAt" |
     @Field()
     zoom: number;
 
-    @Field()
+    @Field(type => ID)
     cityId?: string;
 }

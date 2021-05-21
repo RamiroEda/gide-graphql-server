@@ -1,17 +1,23 @@
 import assert from "assert";
-import { Arg, Args, Authorized, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { ZonesArguments } from "../arguments/zones.arguments";
 import { ZoneInput } from "../inputs/zone.input";
 import { CityModel } from "../models/city.model";
-import { AuthRole } from "../models/context.model";
+import { AuthRole, GideContext } from "../models/context.model";
 import { locationToGeoJSON } from "../models/location.model";
 import { Zone, ZoneModel } from "../models/zone.model";
 
 @Resolver(Zone)
 export class ZoneResolver {
     @Query(returns => [Zone])
-    async zones(@Args() { only } : ZonesArguments) : Promise<Zone[]>{
+    async zones(@Args() { only } : ZonesArguments, @Ctx() context : GideContext) : Promise<Zone[]>{
         let ref = ZoneModel.find();
+
+        if(!context.auth){
+            ref = ref.find({
+                isActive: true
+            });
+        }
 
         if(only){
             ref = ref.find({

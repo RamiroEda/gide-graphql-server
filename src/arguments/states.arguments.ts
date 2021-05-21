@@ -1,7 +1,7 @@
-import { ArgsType, Field } from "type-graphql";
+import { ArgsType, Field, ID } from "type-graphql";
 
 @ArgsType()
 export class StatesArguments {
-    @Field(type => [String], {nullable: true})
+    @Field(type => [ID], {nullable: true})
     only?: string[];
 }

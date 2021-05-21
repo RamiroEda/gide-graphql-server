@@ -23,6 +23,10 @@ export class Zone {
     @Field(type => Float)
     zoom: number;
 
+    @prop({default : false})
+    @Field()
+    isActive: boolean;
+
     @prop()
     @Field()
     readonly createdAt: Date;

@@ -1,10 +1,10 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
-import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { StatesArguments } from "../arguments/states.arguments";
 import { StateInput } from "../inputs/state.input";
 import { City } from "../models/city.model";
-import { AuthRole } from "../models/context.model";
+import { AuthRole, GideContext } from "../models/context.model";
 import { Location } from "../models/location.model";
 import { State, StateModel } from "../models/state.model";
 import { CityResolver } from "./city.resolver";
@@ -12,8 +12,14 @@ import { CityResolver } from "./city.resolver";
 @Resolver(State)
 export class StateResolver {
     @Query(returns => [State])
-    async states(@Args() { only } : StatesArguments) : Promise<State[]>{
+    async states(@Args() { only } : StatesArguments, @Ctx() context : GideContext) : Promise<State[]>{
         let ref = StateModel.find();
+
+        if(!context.auth){
+            ref = ref.find({
+                isActive: true
+            });
+        }
 
         if(only){
             ref = ref.find({
@@ -58,9 +64,9 @@ export class StateResolver {
     }
 
     @FieldResolver(returns => [City], {nullable: true})
-    async cities(@Root() state : DocumentType<State>) : Promise<City[]>{
+    async cities(@Root() state : DocumentType<State>, @Ctx() context : GideContext) : Promise<City[]>{
         return await new CityResolver().cities({
             only: state.cities.map<string>((cityRef) => cityRef.toString())
-        });
+        }, context);
     }
 }

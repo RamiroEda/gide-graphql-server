@@ -7,6 +7,7 @@ import { customAuthChecker } from "./auth";
 import { GideContext } from "./models/context.model";
 import { ExpressContext } from "apollo-server-express";
 import jwt = require('jsonwebtoken');
+import { AuthModel } from "./models/auth.model";
 
 async function bootstrap() {
     // Coneccion con la base de datos
@@ -28,19 +29,29 @@ async function bootstrap() {
         schema,
         introspection: true,
         playground: true,
-        context: (expressContext : ExpressContext) => {
-            const token = expressContext.req.header("Authorization").split(" ");
+        context: async function (expressContext : ExpressContext) : Promise<GideContext> {
+            const token = expressContext.req.headers.authorization?.split(" ");
 
-            if(token.length == 2){
-                const decodedToken = jwt.verify(token[1], JWT_SECRET) as {
-                    _id: string;
-                };
-
-                if(decodedToken){
-                    return <GideContext>{
-                        accessToken: token[1],
-                        userId: decodedToken._id
+            if(token?.length === 2){
+                try{
+                    const decodedToken = jwt.verify(token[1], JWT_SECRET) as {
+                        _id: string;
                     };
+    
+                    if(decodedToken){
+                        const auth = await AuthModel.findOne({
+                            $and: [
+                                { userId: decodedToken._id },
+                                { accessToken: token[1] }
+                            ]
+                        })
+    
+                        return <GideContext>{
+                            auth
+                        };
+                    }
+                }catch(e){
+                    console.error(e);
                 }
             }
 

@@ -1,4 +1,4 @@
-import { Field, InputType } from "type-graphql";
+import { Field, ID, InputType } from "type-graphql";
 import { State } from "../models/state.model";
 import { LocationInput } from "./location.input";
 
@@ -13,6 +13,6 @@ export class StateInput implements Omit<State, "_id" | "createdAt" | "updatedAt"
     @Field()
     zoom: number;
 
-    @Field(type => [String], {nullable: true})
+    @Field(type => [ID], {nullable: true})
     cities?: string[];
 }

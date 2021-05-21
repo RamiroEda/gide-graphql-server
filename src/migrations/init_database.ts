@@ -93,6 +93,7 @@ async function initAdminAccount() {
     }
 
     await UserModel.create({
+        _id: "60a6018b6b0bb34adcbb049e",
         username: "GIDE_ADMIN",
         name: "Administrador",
         role: AuthRole.ADMIN,

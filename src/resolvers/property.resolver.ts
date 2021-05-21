@@ -1,10 +1,10 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
-import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { PropertiesArguments } from "../arguments/properties.arguments";
 import { PropertyInput } from "../inputs/property.input";
 import { City, CityModel } from "../models/city.model";
-import { AuthRole } from "../models/context.model";
+import { AuthRole, GideContext } from "../models/context.model";
 import { Location, locationToGeoJSON } from "../models/location.model";
 import { Property, PropertyModel } from "../models/property.model";
 import { PropertyStatus } from "../models/property_status.model";
@@ -17,8 +17,32 @@ import { ZoneResolver } from "./zone.resolver";
 @Resolver(Property)
 export class PropertyResolver {
     @Query(returns => [Property])
-    async properties(@Args() args : PropertiesArguments) : Promise<Property[]> {
+    async properties(@Args() args : PropertiesArguments, @Ctx() context : GideContext) : Promise<Property[]> {
         let ref = PropertyModel.find();
+
+        if(!context.auth){
+            ref = ref.find({
+                status: PropertyStatus.AVAILABLE
+            });
+        }
+
+        if(args.filterByStateId){
+            ref = ref.find({
+                state: args.filterByStateId
+            });
+        }
+
+        if(args.filterByCityId){
+            ref = ref.find({
+                city: args.filterByCityId
+            });
+        }
+
+        if(args.filterByZoneId){
+            ref = ref.find({
+                zone: args.filterByZoneId
+            });
+        }
 
         if(args.only){
             ref = ref.find({

@@ -1,7 +1,8 @@
 import "reflect-metadata";
+require("dotenv").config()
 import { buildSchema } from "type-graphql";
 import { mongoose } from "@typegoose/typegoose";
-import { DATABASE_URL, JWT_SECRET } from "./constants";
+import { DATABASE_URL, JWT_SECRET, PORT } from "./constants";
 import { ApolloServer } from "apollo-server";
 import { customAuthChecker } from "./auth";
 import { GideContext } from "./models/context.model";
@@ -59,9 +60,9 @@ async function bootstrap() {
         }
     });
 
-    server.listen(80);
+    server.listen(PORT);
 
-    console.log(`🚀 Server ready at http://localhost:80${server.graphqlPath}`)
+    console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
 }
 
 

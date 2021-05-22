@@ -20,6 +20,14 @@ export class Property {
     @Field({description: "Primera linea de la dirección postal del inmueble"})
     address!: string;
 
+    @prop()
+    @Field()
+    description: string;
+
+    @prop()
+    @Field()
+    amenities: string;
+
     @prop({ ref: () => City })
     city!: Ref<City>;
 
@@ -38,8 +46,12 @@ export class Property {
     propertyType!: PropertyType;
 
     @prop()
-    @Field(type => Int, {description: "Area total del inmueble en metros cuadrados"})
-    propertySize!: number;
+    @Field(type => Int, {description: "Area total del lote en metros cuadrados"})
+    lotSize!: number;
+
+    @prop()
+    @Field(type => Int, {description: "Area total construida dentro del lote en metros cuadrados. Debe ser menor o igual al area del lote."})
+    houseSize!: number;
 
     @prop({ type: Price })
     @Field(type => Price, {description: "Precio de compra del inmueble"})

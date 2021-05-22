@@ -1,6 +1,5 @@
 import { Field, Float, ID, InputType, Int } from "type-graphql";
 import { DevelopmentType } from "../models/development_type.model";
-import { Price } from "../models/price.model";
 import { Property } from "../models/property.model";
 import { PropertyType } from "../models/property_type.model";
 import { LocationInput } from "./location.input";
@@ -10,6 +9,12 @@ import { PriceInput } from "./price.input";
 export class PropertyInput implements Omit<Property, "_id" | "location" | "state" | "city" | "zone" | "createdAt" | "updatedAt" | "status">{
     @Field()
     address: string;
+
+    @Field()
+    description: string;
+
+    @Field()
+    amenities: string;
 
     @Field(type => ID)
     cityId: string;
@@ -30,7 +35,10 @@ export class PropertyInput implements Omit<Property, "_id" | "location" | "state
     propertyType: PropertyType;
 
     @Field(type => Int)
-    propertySize: number;
+    lotSize: number;
+
+    @Field(type => Int)
+    houseSize: number;
 
     @Field(type => PriceInput)
     price: PriceInput;

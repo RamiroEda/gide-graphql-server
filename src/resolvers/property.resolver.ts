@@ -1,7 +1,7 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
 import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
-import PropertiesArguments from "../arguments/properties.arguments";
+import { PropertiesArguments } from "../arguments/properties.arguments";
 import { PropertyInput } from "../inputs/property.input";
 import { City, CityModel } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";
@@ -90,16 +90,18 @@ export class PropertyResolver {
     @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Property)
     async addProperty(@Arg("data") data : PropertyInput) : Promise<Property>{
+        assert(data.houseSize <= data.lotSize, "El area construida debe ser menor o igual al area del lote.");
+
         const stateDocument = await StateModel.findById(data.stateId);
 
-        if(!stateDocument) throw Error("El identificador del Estado no existe.");
-        if(!stateDocument.cities.includes(data.cityId)) throw Error("La Ciudad seleccionada no se encuentra dentro del Estado.");
+        assert(stateDocument, "El identificador del Estado no existe.");
+        assert(stateDocument.cities.includes(data.cityId), "La Ciudad seleccionada no se encuentra dentro del Estado.")
 
         const cityDocument = await CityModel.findById(data.cityId);
 
-        if(!cityDocument) throw Error("El identificador de la Ciudad no existe.");
+        assert(cityDocument, "El identificador de la Ciudad no existe.");
         if(data.zoneId){
-            if(!cityDocument.zones.includes(data.zoneId)) throw Error("La Zona seleccionada no se encuentra dentro de la Ciudad.");
+            assert(cityDocument.zones.includes(data.zoneId), "La Zona seleccionada no se encuentra dentro de la Ciudad.")
         }
 
 

@@ -3,9 +3,9 @@ import { Field, ID, ObjectType } from "type-graphql";
 import { CustomerStatus } from "./customer_status.model";
 
 @ObjectType()
-export class CustomerContact{
+export class CustomerContact {
     @Field(type => ID)
-    readonly _id : string;
+    readonly _id: string;
 
     @Field()
     @prop()

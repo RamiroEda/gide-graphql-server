@@ -15,8 +15,7 @@
     "no-var-keyword": true,
     "one-line": [
       true,
-      "check-open-brace",
-      "check-whitespace"
+      "check-open-brace"
     ],
     "semicolon": [false],
     "triple-equals": [
@@ -39,7 +38,6 @@
     ],
     "whitespace": [
       true,
-      "check-branch",
       "check-decl",
       "check-operator",
       "check-separator",

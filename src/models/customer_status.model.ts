@@ -1,4 +1,4 @@
-export enum CustomerStatus{
+export enum CustomerStatus {
     PENDING = "PENDING",
     COMPLETED = "COMPLETED"
 }

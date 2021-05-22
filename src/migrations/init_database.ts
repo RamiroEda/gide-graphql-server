@@ -4,14 +4,12 @@ import states = require("./data/states.json");
 import cities = require("./data/cities.json");
 import { UserModel } from "../models/user.model";
 import { AuthRole } from "../models/context.model";
-import bcrypt = require('bcrypt');
+import bcrypt = require("bcrypt");
 import assert = require("assert");
-import { State } from "../models/state.model";
 import { MapBounds } from "../models/map_bounds.model";
-import { City } from "../models/city.model";
 
 
-const mexicoBounds : MapBounds = {
+const mexicoBounds: MapBounds = {
     northEast: {
         latitude: 32.006965,
         longitude: -82.781276
@@ -20,12 +18,12 @@ const mexicoBounds : MapBounds = {
         latitude: 14.709290, 
         longitude: -118.026798
     }
-}
+};
 
 
-async function initDatabase(){
+async function initDatabase() {
     mongoose.connect(DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
-        if(err){
+        if (err) {
             console.error(err);
         }
     });
@@ -44,9 +42,9 @@ initDatabase();
 
 
 async function initStateCollection() {
-    try{
+    try {
         await mongoose.connection.dropCollection("states");
-    }catch(e){
+    } catch (e) {
         console.error(e);
     }
 
@@ -66,9 +64,9 @@ async function initStateCollection() {
 }
 
 async function initCitiesCollection() {
-    try{
+    try {
         await mongoose.connection.dropCollection("cities");
-    }catch(e){
+    } catch (e) {
         console.error(e);
     }
     
@@ -91,11 +89,11 @@ async function initCitiesCollection() {
 
 
 async function initAdminAccount() {
-    try{
+    try {
         await UserModel.deleteOne({
             username: "GIDE_ADMIN"
         });
-    }catch(e){
+    } catch (e) {
         console.error(e);
     }
 

@@ -6,7 +6,7 @@ import { MapBounds } from "./map_bounds.model";
 @ObjectType({description: "Estado de la republica"})
 export class State {
     @Field(type => ID)
-    readonly _id : string;
+    readonly _id: string;
 
     @prop()
     @Field()

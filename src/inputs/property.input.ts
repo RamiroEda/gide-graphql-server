@@ -6,7 +6,7 @@ import { LocationInput } from "./location.input";
 import { PriceInput } from "./price.input";
 
 @InputType()
-export class PropertyInput implements Omit<Property, "_id" | "location" | "state" | "city" | "zone" | "createdAt" | "updatedAt" | "status">{
+export class PropertyInput implements Omit<Property, "_id" | "location" | "state" | "city" | "zone" | "createdAt" | "updatedAt" | "status"> {
     @Field()
     address: string;
 

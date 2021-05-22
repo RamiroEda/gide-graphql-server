@@ -6,7 +6,7 @@ import { MapBounds } from "./map_bounds.model";
 @ObjectType({description : "Zona dentro de la ciudad"})
 export class Zone {
     @Field(type => ID)
-    readonly _id : string;
+    readonly _id: string;
 
     @prop({required : true})
     @Field()

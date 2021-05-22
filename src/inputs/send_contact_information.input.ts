@@ -3,7 +3,7 @@ import { CustomerContact } from "../models/customer_contact.model";
 
 
 @InputType()
-export class SendContactInformationInput implements Partial<CustomerContact>{
+export class SendContactInformationInput implements Partial<CustomerContact> {
     @Field()
     email: string;
 

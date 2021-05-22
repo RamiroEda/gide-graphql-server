@@ -2,7 +2,7 @@ import { ArgsType, Field, Int } from "type-graphql";
 
 
 @ArgsType()
-export class PaginationArguments{
+export class PaginationArguments {
     @Field(type => Int, {nullable: true})
     limit?: number;
 

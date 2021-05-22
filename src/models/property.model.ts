@@ -58,11 +58,11 @@ export class Property {
     price!: Price;
 
     @prop()
-    @Field(type => Int,{description: "Numero de cuartos"})
+    @Field(type => Int, {description: "Numero de cuartos"})
     roomCount!: number;
 
     @prop()
-    @Field(type => Float,{description: "Numero de baños"})
+    @Field(type => Float, {description: "Numero de baños"})
     bathroomCount!: number;
 
     @prop()
@@ -70,7 +70,7 @@ export class Property {
     parkingSpotCount!: number;
 
     @prop({ enum: DevelopmentType })
-    @Field({description:"El tipo de desarrollo llevado a cabo en la zona residencial del inmueble"})
+    @Field({description: "El tipo de desarrollo llevado a cabo en la zona residencial del inmueble"})
     developmentType!: DevelopmentType;
 
     @prop()

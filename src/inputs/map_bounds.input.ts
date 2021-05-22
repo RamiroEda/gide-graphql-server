@@ -9,5 +9,5 @@ export class MapBoundsInput {
     northEast: LocationInput;
 
     @Field(type => LocationInput)
-    southWest : LocationInput;
+    southWest: LocationInput;
 }

@@ -13,7 +13,7 @@ export class Location {
     longitude: number;
 }
 
-export function locationToGeoJSON(location: Location) : GeoJSONPoint{
+export function locationToGeoJSON(location: Location): GeoJSONPoint {
     return {
         type: "Point",
         coordinates: [location.latitude, location.longitude]

@@ -11,7 +11,7 @@ import { CityResolver } from "./city.resolver";
 @Resolver(State)
 export class StateResolver {
     @Query(returns => [State])
-    async states(@Args() args : StatesArguments, @Ctx() context : GideContext) : Promise<State[]>{
+    async states(@Args() args: StatesArguments, @Ctx() context: GideContext): Promise<State[]>{
         let ref = StateModel.find();
 
         if(!context.auth){
@@ -40,7 +40,7 @@ export class StateResolver {
     }
 
     @Query(returns => State)
-    async state(@Arg("stateId") stateId : string) : Promise<State>{
+    async state(@Arg("stateId") stateId: string): Promise<State>{
         let ref = StateModel.findById(stateId);
 
         const doc = await ref;
@@ -51,7 +51,7 @@ export class StateResolver {
     }
 
     @FieldResolver(returns => [City], {nullable: true})
-    async cities(@Root() state : DocumentType<State>, @Args() args : PaginationArguments, @Ctx() context : GideContext) : Promise<City[]>{
+    async cities(@Root() state: DocumentType<State>, @Args() args: PaginationArguments, @Ctx() context: GideContext): Promise<City[]>{
         return await new CityResolver().cities({
             only: state.cities.map<string>((cityRef) => cityRef.toString()),
             ...args

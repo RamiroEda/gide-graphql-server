@@ -17,13 +17,14 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --config nodemon.json src/index.ts",
-    "start": "tsc && node dist/index.js",
+    "start": "node dist/index.js",
     "test": "mocha --opts tests/mocha.opts",
     "test-watch": "mocha --opts tests/mocha.opts --watch",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "lint-fix": "tslint -c tslint.json 'src/**/*.ts' --fix",
     "migrations:init": "ts-node src/migrations/init_database.ts",
-    "migrations:clean": "ts-node src/migrations/index.ts down --all"
+    "migrations:clean": "ts-node src/migrations/index.ts down --all",
+    "build:prod": "tsc -p ."
   },
   "devDependencies": {
     "@types/chai": "^4.2.18",
@@ -38,7 +39,7 @@
     "typescript": "^4.2.4"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=12.0.0"
   },
   "dependencies": {
     "@typegoose/typegoose": "^7.6.0",

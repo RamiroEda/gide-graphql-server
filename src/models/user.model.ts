@@ -2,8 +2,8 @@ import { getModelForClass, prop } from "@typegoose/typegoose";
 import { AuthRole } from "./context.model";
 
 
-export class User{
-    readonly _id : string;
+export class User {
+    readonly _id: string;
 
     @prop({required: true})
     username: string;

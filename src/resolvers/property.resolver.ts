@@ -17,34 +17,34 @@ import { ZoneResolver } from "./zone.resolver";
 @Resolver(Property)
 export class PropertyResolver {
     @Query(returns => [Property])
-    async properties(@Args() args : PropertiesArguments, @Ctx() context : GideContext) : Promise<Property[]> {
+    async properties(@Args() args: PropertiesArguments, @Ctx() context: GideContext): Promise<Property[]> {
         let ref = PropertyModel.find();
 
-        if(!context.auth){
+        if(!context.auth) {
             ref = ref.find({
                 status: PropertyStatus.AVAILABLE
             });
         }
 
-        if(args.filterByStateId){
+        if(args.filterByStateId) {
             ref = ref.find({
                 state: args.filterByStateId
             });
         }
 
-        if(args.filterByCityId){
+        if(args.filterByCityId) {
             ref = ref.find({
                 city: args.filterByCityId
             });
         }
 
-        if(args.filterByZoneId){
+        if(args.filterByZoneId) {
             ref = ref.find({
                 zone: args.filterByZoneId
             });
         }
 
-        if(args.only){
+        if(args.only) {
             ref = ref.find({
                 _id: {
                     $in: args.only
@@ -52,7 +52,7 @@ export class PropertyResolver {
             });
         }
 
-        if(args.inMapBounds){
+        if(args.inMapBounds) {
             ref = ref.find({
                 location: {
                     $geoWithin: {
@@ -65,7 +65,7 @@ export class PropertyResolver {
             });
         }
         
-        if(args.skip){
+        if(args.skip) {
             ref = ref.skip(args.skip);
         }
         
@@ -77,7 +77,7 @@ export class PropertyResolver {
     }
 
     @Query(returns => Property)
-    async property(@Arg("propertyId") propertyId : string) : Promise<Property>{
+    async property(@Arg("propertyId") propertyId: string): Promise<Property>{
         let ref = PropertyModel.findById(propertyId);
 
         const doc = await ref;
@@ -89,7 +89,7 @@ export class PropertyResolver {
 
     @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Property)
-    async addProperty(@Arg("data") data : PropertyInput) : Promise<Property>{
+    async addProperty(@Arg("data") data: PropertyInput): Promise<Property>{
         assert(data.houseSize <= data.lotSize, "El area construida debe ser menor o igual al area del lote.");
 
         const stateDocument = await StateModel.findById(data.stateId);
@@ -116,7 +116,7 @@ export class PropertyResolver {
     }
 
     @FieldResolver(returns => Location)
-    location(@Root() property : DocumentType<Property>) : Location{
+    location(@Root() property: DocumentType<Property>): Location{
         return {
             latitude: property.location.coordinates[0],
             longitude: property.location.coordinates[1]
@@ -124,17 +124,17 @@ export class PropertyResolver {
     }
 
     @FieldResolver(returns => State)
-    async state(@Root() property : DocumentType<Property>) : Promise<State>{
+    async state(@Root() property: DocumentType<Property>): Promise<State>{
         return new StateResolver().state(property.state.toString());
     }
 
     @FieldResolver(returns => City)
-    async city(@Root() property : DocumentType<Property>) : Promise<City>{
+    async city(@Root() property: DocumentType<Property>): Promise<City>{
         return new CityResolver().city(property.city.toString());
     }
 
     @FieldResolver(returns => Zone)
-    async zone(@Root() property : DocumentType<Property>) : Promise<Zone>{
+    async zone(@Root() property: DocumentType<Property>): Promise<Zone>{
         return new ZoneResolver().zone(property.zone.toString());
     }
 }

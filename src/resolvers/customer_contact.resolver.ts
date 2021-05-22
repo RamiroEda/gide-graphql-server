@@ -11,12 +11,12 @@ import { CustomerContact, CustomerContactModel } from "../models/customer_contac
 export class CustomerContactResolver {
     @Authorized([AuthRole.ADMIN])
     @Query(returns => [CustomerContact])
-    async customerContacts(@Args() args : CustomerContactsArguments) : Promise<CustomerContact[]>{
+    async customerContacts(@Args() args: CustomerContactsArguments): Promise<CustomerContact[]> {
         assert(args.only && args.filterByAnyMatchOf, "No se puede filtrar por los metadatos y obtener IDs especificos al mismo tiempo. Error: only != null && filter != null.");
 
         let ref = CustomerContactModel.find();
 
-        if(args.filterByAnyMatchOf){
+        if (args.filterByAnyMatchOf) {
             ref = ref.find({
                 $or: [
                     { name: { $regex: `.*${args.filterByAnyMatchOf}.*` } },
@@ -25,7 +25,7 @@ export class CustomerContactResolver {
                     { email: { $regex: `.*${args.filterByAnyMatchOf}.*` } }
                 ]
             });
-        }else if(args.only){
+        } else if (args.only) {
             ref = ref.find({
                 _id: {
                     $in: args.only
@@ -33,11 +33,11 @@ export class CustomerContactResolver {
             });
         }
 
-        if(args.skip){
+        if (args.skip) {
             ref = ref.skip(args.skip);
         }
         
-        if(args.limit){
+        if (args.limit) {
             ref = ref.limit(args.limit);
         }
 
@@ -45,7 +45,7 @@ export class CustomerContactResolver {
     }
 
     @Mutation(returns => CustomerContact)
-    async sendContactInformation(@Arg("data") data : SendContactInformationInput) : Promise<CustomerContact> {
+    async sendContactInformation(@Arg("data") data: SendContactInformationInput): Promise<CustomerContact> {
         return await CustomerContactModel.create(data);
     }
 }

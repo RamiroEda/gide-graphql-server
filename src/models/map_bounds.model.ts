@@ -11,5 +11,5 @@ export class MapBounds {
 
     @prop()
     @Field(type => Location)
-    southWest : Location;
+    southWest: Location;
 }

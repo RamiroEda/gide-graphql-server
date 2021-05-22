@@ -7,7 +7,7 @@ export class CustomerContactsArguments implements PaginationArguments {
     only?: string[];
 
     @Field({nullable: true})
-    filterByAnyMatchOf? : string;
+    filterByAnyMatchOf?: string;
 
     @Field(type => Int, {nullable: true})
     limit?: number;

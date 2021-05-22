@@ -1,10 +1,10 @@
-import { Express } from 'express';
+import { Express } from "express";
 
 
-export function startDebugGraphiQL(app : Express){
+export function startDebugGraphiQL(app: Express) {
     console.log("🔄 Starting GraphiQL");
 
     app.get("/", (req: any, res: any) => {
-        res.sendFile(__dirname+"/graphiql/index.html");
+        res.sendFile(__dirname + "/graphiql/index.html");
     });
 }

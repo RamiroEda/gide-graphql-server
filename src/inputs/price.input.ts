@@ -3,7 +3,7 @@ import { AvailableCurrency } from "../models/available_currencies.model";
 import { Price } from "../models/price.model";
 
 @InputType({ description: "Precio de la propiedad" })
-export class PriceInput implements Price{
+export class PriceInput implements Price {
     @Field(type => Float, { description: "Monto basado en la moneda elegida" })
     amount: number;
 

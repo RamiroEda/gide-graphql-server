@@ -5,6 +5,6 @@ export interface GideContext {
 }
 
 
-export enum AuthRole{
+export enum AuthRole {
     ADMIN = "ADMIN"
 }

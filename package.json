@@ -22,7 +22,7 @@
     "test-watch": "mocha --opts tests/mocha.opts --watch",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "lint-fix": "tslint -c tslint.json 'src/**/*.ts' --fix",
-    "migrations:init": "ts-node src/migrations/init_database.ts",
+    "migrations:init": "node dist/migrations/init_database.js",
     "migrations:clean": "ts-node src/migrations/index.ts down --all",
     "build:prod": "tsc -p ."
   },

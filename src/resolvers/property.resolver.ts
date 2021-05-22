@@ -1,7 +1,7 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
 import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
-import { PropertiesArguments } from "../arguments/properties.arguments";
+import PropertiesArguments from "../arguments/properties.arguments";
 import { PropertyInput } from "../inputs/property.input";
 import { City, CityModel } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";

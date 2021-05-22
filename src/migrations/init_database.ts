@@ -6,6 +6,21 @@ import { UserModel } from "../models/user.model";
 import { AuthRole } from "../models/context.model";
 import bcrypt = require('bcrypt');
 import assert = require("assert");
+import { State } from "../models/state.model";
+import { MapBounds } from "../models/map_bounds.model";
+import { City } from "../models/city.model";
+
+
+const mexicoBounds : MapBounds = {
+    northEast: {
+        latitude: 32.006965,
+        longitude: -82.781276
+    },
+    southWest: {
+        latitude: 14.709290, 
+        longitude: -118.026798
+    }
+}
 
 
 async function initDatabase(){
@@ -41,13 +56,9 @@ async function initStateCollection() {
             cities: state.cities.map((cityId) => mongoose.Types.ObjectId(cityId.$oid)),
             createdAt: new Date(state.createdAt.$date),
             isActive: state.isActive,
-            location: {
-                type: state.location.type,
-                coordinates: [state.location.coordinates[0], state.location.coordinates[1]]
-            },
+            bounds: mexicoBounds,
             name: state.name,
             updatedAt: new Date(state.updatedAt.$date),
-            zoom: state.zoom
         };
     }));
 
@@ -66,14 +77,10 @@ async function initCitiesCollection() {
             _id: mongoose.Types.ObjectId(city._id.$oid),
             createdAt: new Date(city.createdAt.$date),
             isActive: city.isActive,
-            location: {
-                type: city.location.type,
-                coordinates: [city.location.coordinates[0], city.location.coordinates[1]]
-            },
+            bounds: mexicoBounds,
             name: city.name,
             updatedAt: new Date(city.updatedAt.$date),
             zones: city.zones.map((zoneId) => mongoose.Types.ObjectId(zoneId.$oid)),
-            zoom: city.zoom,
             state: mongoose.Types.ObjectId(city.state.$oid)
         };
     }));

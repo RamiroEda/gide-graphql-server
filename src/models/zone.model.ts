@@ -1,7 +1,7 @@
 import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
-import { Field, Float, ID, ObjectType } from "type-graphql";
+import { Field, ID, ObjectType } from "type-graphql";
 import { City } from "./city.model";
-import { GeoJSONPoint } from "./geojson.model";
+import { MapBounds } from "./map_bounds.model";
 
 @ObjectType({description : "Zona dentro de la ciudad"})
 export class Zone {
@@ -17,11 +17,8 @@ export class Zone {
     city?: Ref<City>;
 
     @prop({required : true})
-    location: GeoJSONPoint;
-
-    @prop({required : true})
-    @Field(type => Float)
-    zoom: number;
+    @Field(type => MapBounds)
+    bounds: MapBounds;
 
     @prop({default : false})
     @Field()

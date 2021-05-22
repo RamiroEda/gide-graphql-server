@@ -1,12 +1,11 @@
 import { DocumentType } from "@typegoose/typegoose/lib/types";
 import assert from "assert";
-import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Ctx, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import { CitiesArguments } from "../arguments/cities.arguments";
-import { CityInput } from "../inputs/city.input";
+import { PaginationArguments } from "../arguments/pagination.arguments";
 import { City, CityModel } from "../models/city.model";
-import { AuthRole, GideContext } from "../models/context.model";
-import { Location, locationToGeoJSON } from "../models/location.model";
-import { State, StateModel } from "../models/state.model";
+import {  GideContext } from "../models/context.model";
+import { State } from "../models/state.model";
 import { Zone } from "../models/zone.model";
 import { StateResolver } from "./state.resolver";
 import { ZoneResolver } from "./zone.resolver";
@@ -14,7 +13,7 @@ import { ZoneResolver } from "./zone.resolver";
 @Resolver(City)
 export class CityResolver {
     @Query(returns => [City])
-    async cities(@Args() { only } : CitiesArguments, @Ctx() context : GideContext) : Promise<City[]>{
+    async cities(@Args() args : CitiesArguments, @Ctx() context : GideContext) : Promise<City[]>{
         let ref = CityModel.find();
 
         if(!context.auth){
@@ -23,12 +22,20 @@ export class CityResolver {
             });
         }
 
-        if(only){
+        if(args.only){
             ref = ref.find({
                 _id: {
-                    $in: only
+                    $in: args.only
                 }
             });
+        }
+
+        if(args.skip){
+            ref = ref.skip(args.skip);
+        }
+        
+        if(args.limit){
+            ref = ref.limit(args.limit);
         }
 
         return await ref;
@@ -45,37 +52,6 @@ export class CityResolver {
         return doc;
     }
 
-
-    @Authorized([AuthRole.ADMIN])
-    @Mutation(returns => City)
-    async addCity(@Arg("data") data : CityInput) : Promise<City>{
-        const doc = await CityModel.create({
-            ...data,
-            state: data.stateId,
-            location: locationToGeoJSON(data.location)
-        });
-
-        if(data.stateId){
-            await StateModel.updateOne({
-                _id: data.stateId
-            },{
-                $push: {
-                    cities: doc.id
-                }
-            });
-        }
-
-        return doc;
-    }
-
-    @FieldResolver(returns => Location)
-    location(@Root() city : DocumentType<City>) : Location{
-        return {
-            latitude: city.location.coordinates[0],
-            longitude: city.location.coordinates[1]
-        };
-    }
-
     @FieldResolver(returns => State, {nullable: true})
     async state(@Root() city : DocumentType<City>) : Promise<State>{
         if(city.state){
@@ -86,9 +62,10 @@ export class CityResolver {
     }
 
     @FieldResolver(returns => [Zone], {nullable: true})
-    async zones(@Root() city : DocumentType<City>, @Ctx() context : GideContext) : Promise<Zone[]>{
+    async zones(@Root() city : DocumentType<City>, @Args() args : PaginationArguments, @Ctx() context : GideContext) : Promise<Zone[]>{
         return await new ZoneResolver().zones({
-            only: city.zones.map<string>((zoneRef) => zoneRef.toString())
+            only: city.zones.map<string>((zoneRef) => zoneRef.toString()),
+            ...args
         }, context);
     }
 }

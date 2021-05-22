@@ -4,13 +4,12 @@ import { ZonesArguments } from "../arguments/zones.arguments";
 import { ZoneInput } from "../inputs/zone.input";
 import { CityModel } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";
-import { locationToGeoJSON } from "../models/location.model";
 import { Zone, ZoneModel } from "../models/zone.model";
 
 @Resolver(Zone)
 export class ZoneResolver {
     @Query(returns => [Zone])
-    async zones(@Args() { only } : ZonesArguments, @Ctx() context : GideContext) : Promise<Zone[]>{
+    async zones(@Args() args : ZonesArguments, @Ctx() context : GideContext) : Promise<Zone[]>{
         let ref = ZoneModel.find();
 
         if(!context.auth){
@@ -19,12 +18,20 @@ export class ZoneResolver {
             });
         }
 
-        if(only){
+        if(args.only){
             ref = ref.find({
                 _id: {
-                    $in: only
+                    $in: args.only
                 }
             });
+        }
+
+        if(args.skip){
+            ref = ref.skip(args.skip);
+        }
+        
+        if(args.limit){
+            ref = ref.limit(args.limit);
         }
 
         return await ref;
@@ -44,10 +51,7 @@ export class ZoneResolver {
     @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Zone)
     async addZone(@Arg("data") data : ZoneInput) : Promise<Zone>{
-        const doc = await ZoneModel.create({
-            ...data,
-            location: locationToGeoJSON(data.location)
-        });
+        const doc = await ZoneModel.create(data);
 
         if(data.cityId){
             await CityModel.updateOne({

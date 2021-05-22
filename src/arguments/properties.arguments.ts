@@ -1,13 +1,14 @@
 import { ArgsType, Field, ID, Int } from "type-graphql";
-import { MapBounds } from "../inputs/map_bounds.input";
+import { MapBoundsInput } from "../inputs/map_bounds.input";
+import { PaginationArguments } from "./pagination.arguments";
 
 @ArgsType()
-export class PropertiesArguments {
+export class PropertiesArguments implements PaginationArguments {
     @Field(type => [ID], {nullable: true})
     only?: string[];
 
-    @Field(type => MapBounds, {nullable: true})
-    inMapBounds?: MapBounds;
+    @Field(type => MapBoundsInput, {nullable: true})
+    inMapBounds?: MapBoundsInput;
 
     @Field(type => ID, {nullable: true})
     filterByStateId?: string;

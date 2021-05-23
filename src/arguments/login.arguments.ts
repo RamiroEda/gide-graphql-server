@@ -4,11 +4,11 @@ import { ArgsType, Field } from "type-graphql";
 
 @ArgsType()
 export class LoginArguments {
-    @Field()
+    @Field({description: "Nombre de usuario"})
     @MinLength(1)
     username: string;
 
-    @Field()
+    @Field({description: "Contraseña del usuario"})
     @MinLength(8)
     password: string;
 }

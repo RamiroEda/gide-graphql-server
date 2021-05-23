@@ -1,37 +1,41 @@
-import { getModelForClass, prop } from "@typegoose/typegoose";
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { Field, ID, ObjectType } from "type-graphql";
 import { CustomerStatus } from "./customer_status.model";
+import { Property } from "./property.model";
 
 @ObjectType()
 export class CustomerContact {
-    @Field(type => ID)
+    @Field(type => ID, {description: "Identificador de la solicitud de contacto."})
     readonly _id: string;
 
-    @Field()
+    @Field({description: "Nombre del cliente"})
     @prop()
     name: string;
 
-    @Field()
+    @Field({description: "Apellido del cliente"})
     @prop()
     lastName: string;
 
-    @Field()
+    @Field({description: "Correo electronico del cliente"})
     @prop()
     email: string;
 
-    @Field()
+    @Field({description: "Numero de telefono del cliente"})
     @prop()
     phoneNumber: string;
 
-    @Field()
+    @prop({ ref: Property })
+    propertyOfInterest?: Ref<Property>;
+
+    @Field(type => CustomerStatus, {description: "Estado en el que se encuentra la solicitud de contacto"})
     @prop({ enum: CustomerStatus, default: CustomerStatus.PENDING })
     status: CustomerStatus;
 
-    @Field()
+    @Field({description: "Fecha de adicion del documento"})
     @prop()
     readonly createdAt: Date;
 
-    @Field()
+    @Field({description: "Fecha de modificacion del documento"})
     @prop()
     updatedAt: Date;
 }

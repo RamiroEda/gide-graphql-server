@@ -9,7 +9,7 @@ import { UserModel } from "../models/user.model";
 
 @Resolver(Auth)
 export class AuthResolver {
-    @Mutation(returns => Auth, {nullable: true})
+    @Mutation(returns => Auth, {nullable: true, description: "Inicia sesión dentro del sistema"})
     async login(@Args() { username, password }: LoginArguments): Promise<Auth> {
         const userDocument = await UserModel.findOne({
             username: username
@@ -34,8 +34,8 @@ export class AuthResolver {
         return null;
     }
 
-    @Authorized([AuthRole.ADMIN])
-    @Mutation(returns => Boolean, {nullable: true})
+    @Authorized()
+    @Mutation(returns => Boolean, {nullable: true, description: "Cierra la sesión del sistema. Auth required."})
     async logout(@Ctx() context: GideContext): Promise<boolean> {
         if (AuthModel.deleteOne({
             $and: [

@@ -2,14 +2,14 @@ import { prop } from "@typegoose/typegoose";
 import { Field, Float, ObjectType } from "type-graphql";
 import { GeoJSONPoint } from "./geojson.model";
 
-@ObjectType()
+@ObjectType({description: "Coordenadas geograficas"})
 export class Location {
     @prop()
-    @Field(type => Float)
+    @Field(type => Float, {description: "Distancia angular que hay desde un punto de la superficie de la Tierra hasta el paralelo del ecuador."})
     latitude: number;
 
     @prop()
-    @Field(type => Float)
+    @Field(type => Float, {description: "Distancia angular entre un punto dado de la superficie terrestre y el meridiano."})
     longitude: number;
 }
 

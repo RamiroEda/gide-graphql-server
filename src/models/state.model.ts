@@ -5,31 +5,30 @@ import { MapBounds } from "./map_bounds.model";
 
 @ObjectType({description: "Estado de la republica"})
 export class State {
-    @Field(type => ID)
+    @Field(type => ID, {description: "Identificador del estado de la republica"})
     readonly _id: string;
 
     @prop()
-    @Field()
+    @Field({description: "Nombre del estado de la republica"})
     name: string;
 
     @prop({required : true})
-    @Field(type => MapBounds)
+    @Field(type => MapBounds, {description: "Area geografica rectangular que define las delimitaciones del estado."})
     bounds: MapBounds;
 
     @prop({ ref: () => 'City', default: [] })
-    @Field(type => [City])
     cities: Ref<City>[];
 
     @prop({default : false})
-    @Field()
+    @Field({description: "Si la ciudad se encuentra activada dentro del sistema."})
     isActive: boolean;
 
     @prop()
-    @Field()
+    @Field({description: "Fecha de adicion del documento"})
     readonly createdAt: Date;
 
     @prop()
-    @Field()
+    @Field({description: "Fecha de modificacion del documento"})
     updatedAt: Date;
 }
 

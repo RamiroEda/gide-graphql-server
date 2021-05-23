@@ -10,7 +10,7 @@ import { CityResolver } from "./city.resolver";
 
 @Resolver(State)
 export class StateResolver {
-    @Query(returns => [State])
+    @Query(returns => [State], {description: "Obtiene los estados dentro de la republica mexicana. Si se ha iniciado sesion debolvera todos los estados, sino, devolvera los estados activados."})
     async states(@Args() args: StatesArguments, @Ctx() context: GideContext): Promise<State[]>{
         let ref = StateModel.find();
 
@@ -39,8 +39,8 @@ export class StateResolver {
         return await ref;
     }
 
-    @Query(returns => State)
-    async state(@Arg("stateId") stateId: string): Promise<State>{
+    @Query(returns => State, {description: "Obtiene el estado por medio de su ID."})
+    async state(@Arg("stateId", {description: "ID del estado a obtener."}) stateId: string): Promise<State>{
         let ref = StateModel.findById(stateId);
 
         const doc = await ref;
@@ -50,7 +50,7 @@ export class StateResolver {
         return doc;
     }
 
-    @FieldResolver(returns => [City], {nullable: true})
+    @FieldResolver(returns => [City], {nullable: true, description: "Ciudades que se encuentran dentro de este estado."})
     async cities(@Root() state: DocumentType<State>, @Args() args: PaginationArguments, @Ctx() context: GideContext): Promise<City[]>{
         return await new CityResolver().cities({
             only: state.cities.map<string>((cityRef) => cityRef.toString()),

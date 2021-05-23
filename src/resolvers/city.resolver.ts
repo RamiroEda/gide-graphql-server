@@ -12,7 +12,7 @@ import { ZoneResolver } from "./zone.resolver";
 
 @Resolver(City)
 export class CityResolver {
-    @Query(returns => [City])
+    @Query(returns => [City], {description: "Obtiene las ciudades dentro de la republica mexicana. Si se ha iniciado sesión devuelve todas las ciudades, sino, devuelve únicamente las ciudades activadas."})
     async cities(@Args() args: CitiesArguments, @Ctx() context: GideContext): Promise<City[]> {
         let ref = CityModel.find();
 
@@ -41,8 +41,8 @@ export class CityResolver {
         return await ref;
     }
 
-    @Query(returns => City)
-    async city(@Arg("cityId") cityId: string): Promise<City> {
+    @Query(returns => City, {description: "Obtiene la ciudad por medio de su ID. En caso de no existir tira un error."})
+    async city(@Arg("cityId", {description: "ID de la ciudad a buscar"}) cityId: string): Promise<City> {
         let ref = CityModel.findById(cityId);
 
         const doc = await ref;
@@ -52,7 +52,7 @@ export class CityResolver {
         return doc;
     }
 
-    @FieldResolver(returns => State, {nullable: true})
+    @FieldResolver(returns => State, {nullable: true, description: "Estado donde se situa la ciudad"})
     async state(@Root() city: DocumentType<City>): Promise<State> {
         if (city.state) {
             return new StateResolver().state(city.state.toString());
@@ -61,7 +61,7 @@ export class CityResolver {
         }
     }
 
-    @FieldResolver(returns => [Zone], {nullable: true})
+    @FieldResolver(returns => [Zone], {nullable: true, description: "Zonas en las que se divide la ciudad"})
     async zones(@Root() city: DocumentType<City>, @Args() args: PaginationArguments, @Ctx() context: GideContext): Promise<Zone[]> {
         return await new ZoneResolver().zones({
             only: city.zones.map<string>((zoneRef) => zoneRef.toString()),

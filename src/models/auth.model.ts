@@ -2,7 +2,7 @@ import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { Field, ObjectType } from "type-graphql";
 import { User } from "./user.model";
 
-@ObjectType()
+@ObjectType({description: "Objeto de relacion entre usuario y sesion"})
 export class Auth {
     _id: string;
 
@@ -10,11 +10,11 @@ export class Auth {
     userId: Ref<User>;
 
     @prop({ required: true, minlength: 64 })
-    @Field()
+    @Field({description: "Access Token de la sesion del usuario."})
     accessToken: string;
 
     @prop({required: true})
-    @Field()
+    @Field({description: "Tipo de token. ej 'Bearer'"})
     tokenType: string;
 
     @prop()

@@ -13,7 +13,7 @@ import { Zone } from "./zone.model";
     description: "Inmueble dentro del sistema de compraventa. Este inmueble contiene los objetos de Ciudad, Estado y Zona."
 })
 export class Property {
-    @Field(type => ID)
+    @Field(type => ID, {description: "Identificador del inmueble"})
     readonly _id!: string;
 
     @prop()
@@ -21,11 +21,11 @@ export class Property {
     address!: string;
 
     @prop()
-    @Field()
+    @Field({description: "Descripcion del inmueble"})
     description: string;
 
     @prop()
-    @Field()
+    @Field({description: "Amenidades del inmueble"})
     amenities: string;
 
     @prop({ ref: () => City })

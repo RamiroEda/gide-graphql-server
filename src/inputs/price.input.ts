@@ -1,8 +1,8 @@
-import { Field, Float, InputType, ObjectType } from "type-graphql";
+import { Field, Float, InputType } from "type-graphql";
 import { AvailableCurrency } from "../models/available_currencies.model";
 import { Price } from "../models/price.model";
 
-@InputType({ description: "Precio de la propiedad" })
+@InputType({ description: "Entrada del precio basado en las monedas disponibles" })
 export class PriceInput implements Price {
     @Field(type => Float, { description: "Monto basado en la moneda elegida" })
     amount: number;

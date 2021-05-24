@@ -1,13 +1,14 @@
 import { ArgsType, Field, ID, Int } from "type-graphql";
+import { ZonesFilter } from "../filters/zones.filter";
 import { PaginationArguments } from "./pagination.arguments";
 
 @ArgsType()
-export class ZonesArguments implements PaginationArguments {
-    @Field(type => [ID], {nullable: true, description: "Va a devolver unicamente los IDs especificados"})
-    only?: string[];
+export class ZonesArguments extends PaginationArguments {
+    @Field(type => ZonesFilter, {nullable: true, description: "Va a devolver unicamente los IDs especificados"})
+    find?: ZonesFilter;
 
-    @Field(type => Int, {nullable: true, description: "Limita el numero de elementos retornados a la cantidad especificada o menos"})
-    limit?: number;
+    @Field(type => Int, {description: "Limita el numero de elementos retornados a la cantidad especificada o menos"})
+    limit: number;
 
     @Field(type => Int, {nullable: true, description: "Salta el numero de elementos especificados"})
     skip?: number;

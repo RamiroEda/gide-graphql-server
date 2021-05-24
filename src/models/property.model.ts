@@ -3,6 +3,7 @@ import { Field, Float, ID, Int, ObjectType } from "type-graphql";
 import { City } from "./city.model";
 import { DevelopmentType } from "./development_type.model";
 import { GeoJSONPoint } from "./geojson.model";
+import { BaseModel } from "./model";
 import { Price } from "./price.model";
 import { PropertyStatus } from "./property_status.model";
 import { PropertyType } from "./property_type.model";
@@ -12,7 +13,7 @@ import { Zone } from "./zone.model";
 @ObjectType({
     description: "Inmueble dentro del sistema de compraventa. Este inmueble contiene los objetos de Ciudad, Estado y Zona."
 })
-export class Property {
+export class Property implements BaseModel {
     @Field(type => ID, {description: "Identificador del inmueble"})
     readonly _id!: string;
 

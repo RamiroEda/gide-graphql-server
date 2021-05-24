@@ -1,5 +1,4 @@
 import { DocumentType } from "@typegoose/typegoose";
-import assert from "assert";
 import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { CustomerContactsArguments } from "../arguments/customer_contacts.arguments";
 import { SendContactInformationInput } from "../inputs/send_contact_information.input";
@@ -15,34 +14,13 @@ export class CustomerContactResolver {
     @Authorized([AuthRole.ADMIN])
     @Query(returns => [CustomerContact], {description: "Obtiene las solicitudes de contacto registrados en el sistema."})
     async customerContacts(@Args() args: CustomerContactsArguments): Promise<CustomerContact[]> {
-        assert(args.only && args.filterByAnyMatchOf, "No se puede filtrar por los metadatos y obtener IDs especificos al mismo tiempo. Error: only != null && filter != null.");
-
         let ref = CustomerContactModel.find();
 
-        if (args.filterByAnyMatchOf) {
-            ref = ref.find({
-                $or: [
-                    { name: { $regex: `.*${args.filterByAnyMatchOf}.*` } },
-                    { lastName: { $regex: `.*${args.filterByAnyMatchOf}.*` } },
-                    { phoneNumber: { $regex: `.*${args.filterByAnyMatchOf}.*` } },
-                    { email: { $regex: `.*${args.filterByAnyMatchOf}.*` } }
-                ]
-            });
-        } else if (args.only) {
-            ref = ref.find({
-                _id: {
-                    $in: args.only
-                }
-            });
+        if(args.find){
+            ref = args.find.filter(ref);
         }
 
-        if (args.skip) {
-            ref = ref.skip(args.skip);
-        }
-        
-        if (args.limit) {
-            ref = ref.limit(args.limit);
-        }
+        ref = args.paginate(ref);
 
         return await ref;
     }

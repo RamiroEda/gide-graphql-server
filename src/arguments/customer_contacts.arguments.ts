@@ -1,17 +1,14 @@
 import { ArgsType, Field, ID, Int } from "type-graphql";
-import { FilterArguments } from "./filter.arguments";
+import { CustomerContactsFilter } from "../filters/customer_contacts.filter";
 import { PaginationArguments } from "./pagination.arguments";
 
 @ArgsType()
-export class CustomerContactsArguments implements PaginationArguments, FilterArguments {
-    @Field(type => [ID], {nullable: true, description: "Va a devolver unicamente los IDs especificados"})
-    only?: string[];
+export class CustomerContactsArguments extends PaginationArguments {
+    @Field(type => CustomerContactsFilter, {nullable: true, description: "Va a devolver los documentos que cumplan con los requisitos definidos"})
+    find?: CustomerContactsFilter;
 
-    @Field({nullable: true, description: "Obtiene todos los documentos que cumplan con la entrada en CUALQUIERA de sus campos"})
-    filterByAnyMatchOf?: string;
-
-    @Field(type => Int, {nullable: true, description: "Limita el numero de elementos retornados a la cantidad especificada o menos"})
-    limit?: number;
+    @Field(type => Int, {description: "Limita el numero de elementos retornados a la cantidad especificada o menos"})
+    limit: number;
 
     @Field(type => Int, {nullable: true, description: "Salta el numero de elementos especificados"})
     skip?: number;

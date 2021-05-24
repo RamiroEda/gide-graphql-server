@@ -1,9 +1,10 @@
 import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { Field, ObjectType } from "type-graphql";
+import { BaseModel } from "./model";
 import { User } from "./user.model";
 
 @ObjectType({description: "Objeto de relacion entre usuario y sesion"})
-export class Auth {
+export class Auth implements BaseModel {
     _id: string;
 
     @prop({required: true, ref: User})

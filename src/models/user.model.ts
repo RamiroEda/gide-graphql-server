@@ -1,8 +1,9 @@
 import { getModelForClass, prop } from "@typegoose/typegoose";
 import { AuthRole } from "./context.model";
+import { BaseModel } from "./model";
 
 
-export class User {
+export class User implements BaseModel {
     readonly _id: string;
 
     @prop({required: true})

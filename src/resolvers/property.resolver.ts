@@ -20,58 +20,17 @@ export class PropertyResolver {
     async properties(@Args() args: PropertiesArguments, @Ctx() context: GideContext): Promise<Property[]> {
         let ref = PropertyModel.find();
 
+        if(args.find){
+            ref = args.find.filter(ref);
+        }
+
         if(!context.auth) {
             ref = ref.find({
                 status: PropertyStatus.AVAILABLE
             });
         }
 
-        if(args.filterByStateId) {
-            ref = ref.find({
-                state: args.filterByStateId
-            });
-        }
-
-        if(args.filterByCityId) {
-            ref = ref.find({
-                city: args.filterByCityId
-            });
-        }
-
-        if(args.filterByZoneId) {
-            ref = ref.find({
-                zone: args.filterByZoneId
-            });
-        }
-
-        if(args.only) {
-            ref = ref.find({
-                _id: {
-                    $in: args.only
-                }
-            });
-        }
-
-        if(args.inMapBounds) {
-            ref = ref.find({
-                location: {
-                    $geoWithin: {
-                        $box: [
-                            [ args.inMapBounds.southWest.latitude, args.inMapBounds.southWest.longitude ],
-                            [ args.inMapBounds.northEast.latitude, args.inMapBounds.northEast.longitude ]
-                        ]
-                    }
-                }
-            });
-        }
-        
-        if(args.skip) {
-            ref = ref.skip(args.skip);
-        }
-        
-        if(args.limit){
-            ref = ref.limit(args.limit);
-        }
+        ref = args.paginate(ref);
 
         return await ref;
     }

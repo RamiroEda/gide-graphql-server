@@ -1,10 +1,11 @@
 import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { Field, ID, ObjectType } from "type-graphql";
 import { CustomerStatus } from "./customer_status.model";
+import { BaseModel } from "./model";
 import { Property } from "./property.model";
 
 @ObjectType()
-export class CustomerContact {
+export class CustomerContact implements BaseModel {
     @Field(type => ID, {description: "Identificador de la solicitud de contacto."})
     readonly _id: string;
 

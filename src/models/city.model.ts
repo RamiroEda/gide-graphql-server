@@ -1,11 +1,12 @@
 import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
-import { Field, Float, ID, ObjectType } from "type-graphql";
+import { Field, ID, ObjectType } from "type-graphql";
 import { MapBounds } from "./map_bounds.model";
+import { BaseModel } from "./model";
 import { State } from "./state.model";
 import { Zone } from "./zone.model";
 
 @ObjectType({description: "Ciudad dentro de un estado de la republica"})
-export class City {
+export class City extends BaseModel {
     @Field(type => ID, {description: "Identificador de la ciudad"})
     readonly _id: string;
 

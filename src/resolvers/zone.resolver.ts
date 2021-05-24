@@ -14,27 +14,17 @@ export class ZoneResolver {
     async zones(@Args() args: ZonesArguments, @Ctx() context: GideContext): Promise<Zone[]> {
         let ref = ZoneModel.find();
 
+        if(args.find){
+            ref = args.find.filter(ref);
+        }
+
         if(!context.auth) {
             ref = ref.find({
                 isActive: true
             });
         }
 
-        if(args.only) {
-            ref = ref.find({
-                _id: {
-                    $in: args.only
-                }
-            });
-        }
-
-        if(args.skip) {
-            ref = ref.skip(args.skip);
-        }
-        
-        if(args.limit) {
-            ref = ref.limit(args.limit);
-        }
+        ref = args.paginate(ref);
 
         return await ref;
     }

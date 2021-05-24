@@ -1,8 +1,10 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
 import { Arg, Args, Ctx, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import { CitiesArguments } from "../arguments/cities.arguments";
 import { PaginationArguments } from "../arguments/pagination.arguments";
 import { StatesArguments } from "../arguments/states.arguments";
+import { CitiesFilter } from "../filters/cities.filter";
 import { City } from "../models/city.model";
 import { GideContext } from "../models/context.model";
 import { State, StateModel } from "../models/state.model";
@@ -14,27 +16,17 @@ export class StateResolver {
     async states(@Args() args: StatesArguments, @Ctx() context: GideContext): Promise<State[]>{
         let ref = StateModel.find();
 
-        if(!context.auth){
+        if(args.find){
+            ref = args.find.filter(ref);
+        }
+
+        if(!context.auth) {
             ref = ref.find({
                 isActive: true
             });
         }
 
-        if(args.only){
-            ref = ref.find({
-                _id: {
-                    $in: args.only
-                }
-            });
-        }
-
-        if(args.skip){
-            ref = ref.skip(args.skip);
-        }
-        
-        if(args.limit){
-            ref = ref.limit(args.limit);
-        }
+        ref = args.paginate(ref);
 
         return await ref;
     }
@@ -52,9 +44,15 @@ export class StateResolver {
 
     @FieldResolver(returns => [City], {nullable: true, description: "Ciudades que se encuentran dentro de este estado."})
     async cities(@Root() state: DocumentType<State>, @Args() args: PaginationArguments, @Ctx() context: GideContext): Promise<City[]>{
-        return await new CityResolver().cities({
-            only: state.cities.map<string>((cityRef) => cityRef.toString()),
-            ...args
-        }, context);
+        const citiesArguments = new CitiesArguments();
+
+        const filter = new CitiesFilter();
+        filter.ids = state.cities.map<string>((cityRef) => cityRef.toString());
+
+        citiesArguments.find = filter;
+        citiesArguments.limit = args.limit;
+        citiesArguments.skip = args.skip;
+
+        return await new CityResolver().cities(citiesArguments, context);
     }
 }

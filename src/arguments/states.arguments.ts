@@ -1,14 +1,14 @@
 import { ArgsType, Field, ID, Int } from "type-graphql";
-import { FilterArguments } from "./filter.arguments";
+import { StatesFilter } from "../filters/states.filter";
 import { PaginationArguments } from "./pagination.arguments";
 
 @ArgsType()
-export class StatesArguments implements PaginationArguments, FilterArguments {
-    @Field(type => [ID], {nullable: true, description: "Va a devolver unicamente los IDs especificados"})
-    only?: string[];
+export class StatesArguments extends PaginationArguments {
+    @Field(type => StatesFilter, {nullable: true, description: "Va a devolver los documentos que cumplan con los requisitos definidos"})
+    find?: StatesFilter;
 
-    @Field(type => Int, {nullable: true, description: "Limita el numero de elementos retornados a la cantidad especificada o menos"})
-    limit?: number;
+    @Field(type => Int, {description: "Limita el numero de elementos retornados a la cantidad especificada o menos"})
+    limit: number;
 
     @Field(type => Int, {nullable: true, description: "Salta el numero de elementos especificados"})
     skip?: number;

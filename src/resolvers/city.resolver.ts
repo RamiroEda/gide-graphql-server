@@ -1,8 +1,11 @@
-import { DocumentType } from "@typegoose/typegoose/lib/types";
+import { BeAnObject, DocumentType } from "@typegoose/typegoose/lib/types";
 import assert from "assert";
+import { QueryWithHelpers } from "mongoose";
 import { Arg, Args, Ctx, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import { CitiesArguments } from "../arguments/cities.arguments";
 import { PaginationArguments } from "../arguments/pagination.arguments";
+import { ZonesArguments } from "../arguments/zones.arguments";
+import { ZonesFilter } from "../filters/zones.filter";
 import { City, CityModel } from "../models/city.model";
 import {  GideContext } from "../models/context.model";
 import { State } from "../models/state.model";
@@ -15,6 +18,10 @@ export class CityResolver {
     @Query(returns => [City], {description: "Obtiene las ciudades dentro de la republica mexicana. Si se ha iniciado sesión devuelve todas las ciudades, sino, devuelve únicamente las ciudades activadas."})
     async cities(@Args() args: CitiesArguments, @Ctx() context: GideContext): Promise<City[]> {
         let ref = CityModel.find();
+        
+        if(args.find){
+            ref = args.find.filter(ref);
+        }
 
         if (!context.auth) {
             ref = ref.find({
@@ -22,21 +29,7 @@ export class CityResolver {
             });
         }
 
-        if (args.only) {
-            ref = ref.find({
-                _id: {
-                    $in: args.only
-                }
-            });
-        }
-
-        if (args.skip) {
-            ref = ref.skip(args.skip);
-        }
-        
-        if (args.limit) {
-            ref = ref.limit(args.limit);
-        }
+        ref = args.paginate(ref);
 
         return await ref;
     }
@@ -63,9 +56,15 @@ export class CityResolver {
 
     @FieldResolver(returns => [Zone], {nullable: true, description: "Zonas en las que se divide la ciudad"})
     async zones(@Root() city: DocumentType<City>, @Args() args: PaginationArguments, @Ctx() context: GideContext): Promise<Zone[]> {
-        return await new ZoneResolver().zones({
-            only: city.zones.map<string>((zoneRef) => zoneRef.toString()),
-            ...args
-        }, context);
+        const zonesArguments = new ZonesArguments();
+
+        const filter = new ZonesFilter();
+        filter.ids = city.zones.map<string>((zoneRef) => zoneRef.toString());
+
+        zonesArguments.find = filter;
+        zonesArguments.limit = args.limit;
+        zonesArguments.skip = args.skip;
+
+        return await new ZoneResolver().zones(zonesArguments, context);
     }
 }

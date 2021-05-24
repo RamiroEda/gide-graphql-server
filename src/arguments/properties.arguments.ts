@@ -1,9 +1,13 @@
 import { ArgsType, Field, Int } from "type-graphql";
 import { PropertiesFilter } from "../filters/properties.filter";
+import { AvailableCurrency } from "../models/available_currencies.model";
 import { PaginationArguments } from "./pagination.arguments";
 
 @ArgsType()
 export class PropertiesArguments extends PaginationArguments {
+    @Field(type => AvailableCurrency, {description: "La moneda en la que se retornaran los inmuebles"})
+    currency: AvailableCurrency;
+
     @Field(type => PropertiesFilter, {nullable: true, description: "Va a devolver los documentos que cumplan con los requisitos definidos"})
     find?: PropertiesFilter;
 

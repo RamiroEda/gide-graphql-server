@@ -2,6 +2,7 @@ import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
 import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { PropertiesArguments } from "../arguments/properties.arguments";
+import { CurrencyConverter } from "../currencies/currency_converter";
 import { PropertyInput } from "../inputs/property.input";
 import { City, CityModel } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";
@@ -21,7 +22,7 @@ export class PropertyResolver {
         let ref = PropertyModel.find();
 
         if(args.find){
-            ref = args.find.filter(ref);
+            ref = (await args.find.customFilter(ref, args.currency)).ref;
         }
 
         if(!context.auth) {
@@ -32,7 +33,13 @@ export class PropertyResolver {
 
         ref = args.paginate(ref);
 
-        return await ref;
+        return await Promise.all(
+            (await ref).map<Promise<DocumentType<Property>>>(async (doc) => {
+                doc.price = await CurrencyConverter.convert(doc.price, args.currency);
+    
+                return doc;
+            })
+        );
     }
 
     @Query(returns => Property, {description: "Obtiene un inmueble por medio de su ID."})

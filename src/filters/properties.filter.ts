@@ -3,13 +3,19 @@ import { BeAnObject, ReturnModelType } from "@typegoose/typegoose/lib/types";
 import { QueryWithHelpers } from "mongoose";
 import { Field, ID, InputType, ObjectType } from "type-graphql";
 import { Filter } from "../arguments/filter.arguments";
+import { CurrencyConverter } from "../currencies/currency_converter";
 import { MapBoundsInput } from "../inputs/map_bounds.input";
+import { AvailableCurrency, AVAILABLE_CURRECIES } from "../models/available_currencies.model";
+import { DevelopmentType } from "../models/development_type.model";
 import { Property } from "../models/property.model";
 import { PropertyStatus } from "../models/property_status.model";
+import { PropertyType } from "../models/property_type.model";
+import { PriceRange } from "./price_range.filter";
+import { Range } from "./range.filter";
 
 
 @InputType()
-export class PropertiesFilter extends Filter<Property> implements Partial<Property> {
+export class PropertiesFilter extends Filter<Property> {
     @Field(type => [ID], {nullable: true, description: "Obtendra todos los documentos con los IDs especificados"})
     ids?: string[];
 
@@ -28,24 +34,165 @@ export class PropertiesFilter extends Filter<Property> implements Partial<Proper
     @Field({nullable: true, description: "Filtra por estado de la propiedad"})
     status?: PropertyStatus;
 
+    @Field({nullable: true, description: "Filtra por la disponibilidad de aceptar mascotas"})
+    arePetsAllowed?: boolean;
+
+    @Field({nullable: true, description: "Filtra por direcciones parecidas a la entrada"})
+    address?: string;
+
+    @Field(type => Range, {nullable: true, description: "Filtra por tamaño del lote"})
+    lotSize?: Range;
+
+    @Field(type => Range, {nullable: true, description: "Filtra por tamaño del terreno contruido"})
+    houseSize?: Range;
+
+    @Field(type => Range, {nullable: true, description: "Filtra por el numero de baños"})
+    bathroomCount?: Range;
+
+    @Field(type => Range, {nullable: true, description: "Filtra por el numero de cuartos"})
+    roomCount?: Range;
+
+    @Field(type => Range, {nullable: true, description: "Filtra por el numero de espacios para estacionar"})
+    parkingSpotCount?: Range;
+
+    @Field(type => DevelopmentType, {nullable: true, description: "Filtra por el tipo de desarrollo inmobiliario del lugar"})
+    developmentType?: DevelopmentType;
+
+    @Field(type => PropertyType, {nullable: true, description: "Filtra por el tipo de propiedad"})
+    propertyType?: PropertyType;
+
+    @Field(type => PriceRange, {nullable: true, description: "Filtra por el precio del inmueble"})
+    price?: PriceRange;
+
+    async customFilter(ref: QueryWithHelpers<DocumentType<Property>[], DocumentType<Property>, BeAnObject>, expectedReturnCurrency: AvailableCurrency): Promise<{ ref: QueryWithHelpers<DocumentType<Property>[], DocumentType<Property>, BeAnObject> }>{
+        ref = this.filter(ref);
+
+        if(this.price){
+            console.log(AVAILABLE_CURRECIES);
+            
+            const ranges = await Promise.all(
+                AVAILABLE_CURRECIES.map<Promise<PriceRange>>(async (key) => {
+                    return {
+                        maxPrice: (await CurrencyConverter.convert({
+                            amount: this.price.maxPrice,
+                            currency: this.price.currency
+                        }, AvailableCurrency[key])).amount,
+                        minPrice: (await CurrencyConverter.convert({
+                            amount: this.price.minPrice,
+                            currency: this.price.currency
+                        }, AvailableCurrency[key])).amount,
+                        currency: AvailableCurrency[key]
+                    }
+                })
+            );
+
+            ref = ref.find({
+                $or: ranges.map((range) => {
+                    return {
+                        "price.currency": range.currency,
+                        "price.amount": {
+                            $lte: range.maxPrice,
+                            $gte: range.minPrice
+                        }
+                    }
+                })
+            });
+        }
+
+        return {
+            ref
+        };
+    }
+
     filter(ref: QueryWithHelpers<DocumentType<Property>[], DocumentType<Property>, BeAnObject>): QueryWithHelpers<DocumentType<Property>[], DocumentType<Property>, BeAnObject>{  
         ref = super.filter(ref);
 
         if(this.state){
-            ref.find({
+            ref = ref.find({
                 state: this.state
             });
         }
 
         if(this.city){
-            ref.find({
+            ref = ref.find({
                 city: this.city
             });
         }
 
         if(this.zone){
-            ref.find({
+            ref = ref.find({
                 zone: this.city
+            });
+        }
+
+        if(this.arePetsAllowed !== undefined){
+            ref = ref.find({
+                arePetsAllowed: this.arePetsAllowed
+            });
+        }
+
+        if(this.address){
+            ref = ref.find({
+                address: {
+                    $regex: RegExp(`.*${this.address}.*`, "i")
+                }
+            });
+        }
+
+        if(this.lotSize){
+            ref = ref.find({
+                lotSize: {
+                    $gte: this.lotSize.minValue,
+                    $lte: this.lotSize.maxValue
+                }
+            });
+        }
+
+        if(this.houseSize){
+            ref = ref.find({
+                houseSize: {
+                    $gte: this.houseSize.minValue,
+                    $lte: this.houseSize.maxValue
+                }
+            });
+        }
+
+        if(this.bathroomCount){
+            ref = ref.find({
+                bathroomCount: {
+                    $gte: this.bathroomCount.minValue,
+                    $lte: this.bathroomCount.maxValue
+                }
+            });
+        }
+
+        if(this.roomCount){
+            ref = ref.find({
+                roomCount: {
+                    $gte: this.roomCount.minValue,
+                    $lte: this.roomCount.maxValue
+                }
+            });
+        }
+
+        if(this.parkingSpotCount){
+            ref = ref.find({
+                parkingSpotCount: {
+                    $gte: this.parkingSpotCount.minValue,
+                    $lte: this.parkingSpotCount.maxValue
+                }
+            });
+        }
+
+        if(this.developmentType){
+            ref = ref.find({
+                developmentType: this.developmentType
+            });
+        }
+
+        if(this.propertyType){
+            ref = ref.find({
+                propertyType: this.propertyType
             });
         }
 

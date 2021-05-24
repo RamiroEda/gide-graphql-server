@@ -31,7 +31,7 @@ export class PropertyInput implements Omit<Property, "_id" | "location" | "state
     @Field({description: "Codigo postal del inmueble"})
     postalCode!: string;
 
-    @Field({description: "Tipo de inmueble"})
+    @Field(type => PropertyType, {description: "Tipo de inmueble"})
     propertyType!: PropertyType;
 
     @Field(type => Int, {description: "Area total del lote en metros cuadrados"})
@@ -52,9 +52,9 @@ export class PropertyInput implements Omit<Property, "_id" | "location" | "state
     @Field(type => Int, {description: "Numero de lugares para estacionar"})
     parkingSpotCount!: number;
 
-    @Field({description: "El tipo de desarrollo llevado a cabo en la zona residencial del inmueble"})
+    @Field(type => DevelopmentType, {description: "El tipo de desarrollo llevado a cabo en la zona residencial del inmueble"})
     developmentType!: DevelopmentType;
 
-    @Field({description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
+    @Field(type => Boolean, {nullable: true, description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
     arePetsAllowed?: boolean;
 }

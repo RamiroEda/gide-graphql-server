@@ -1,6 +1,6 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
-import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { ZonesArguments } from "../arguments/zones.arguments";
 import { ZoneInput } from "../inputs/zone.input";
 import { City, CityModel } from "../models/city.model";
@@ -30,14 +30,28 @@ export class ZoneResolver {
     }
 
     @Query(returns => Zone, {description: "Obtiene una zona por medio de su ID."})
-    async zone(@Arg("zoneId", {description: "ID de la zona a obtener"}) zoneId: string): Promise<Zone> {
-        let ref = ZoneModel.findById(zoneId);
+    async zone(@Arg("zone", {description: "ID de la zona a obtener"}) zone: string): Promise<Zone> {
+        let ref = ZoneModel.findById(zone);
 
         const doc = await ref;
 
         assert(doc, "No existe el documento");
 
         return doc;
+    }
+
+    @Authorized([AuthRole.ADMIN])
+    @Mutation(returns => Zone, {description: "Cambia el estado de activacion de la zona al valor opuesto."})
+    async toggleZoneActivation(@Arg("zone", type => ID, {description: "ID de la ciudad a actualizar"}) zone: string): Promise<Zone>{
+        let ref = ZoneModel.findById(zone);
+
+        const doc = await ref;
+
+        assert(doc, "No existe el documento");
+
+        doc.isActive = !doc.isActive;
+
+        return (await doc.save() as DocumentType<Zone>);
     }
 
     @FieldResolver(returns => City, {description: "Ciudad donde se encuentra la zona"})

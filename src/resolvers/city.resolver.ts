@@ -1,13 +1,13 @@
 import { BeAnObject, DocumentType } from "@typegoose/typegoose/lib/types";
 import assert from "assert";
 import { QueryWithHelpers } from "mongoose";
-import { Arg, Args, Ctx, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { CitiesArguments } from "../arguments/cities.arguments";
 import { PaginationArguments } from "../arguments/pagination.arguments";
 import { ZonesArguments } from "../arguments/zones.arguments";
 import { ZonesFilter } from "../filters/zones.filter";
 import { City, CityModel } from "../models/city.model";
-import {  GideContext } from "../models/context.model";
+import {  AuthRole, GideContext } from "../models/context.model";
 import { State } from "../models/state.model";
 import { Zone } from "../models/zone.model";
 import { StateResolver } from "./state.resolver";
@@ -35,14 +35,28 @@ export class CityResolver {
     }
 
     @Query(returns => City, {description: "Obtiene la ciudad por medio de su ID. En caso de no existir tira un error."})
-    async city(@Arg("cityId", {description: "ID de la ciudad a buscar"}) cityId: string): Promise<City> {
-        let ref = CityModel.findById(cityId);
+    async city(@Arg("city", type => ID, {description: "ID de la ciudad a buscar"}) city: string): Promise<City> {
+        let ref = CityModel.findById(city);
 
         const doc = await ref;
 
         assert(doc, "No existe el documento");
 
         return doc;
+    }
+
+    @Authorized([AuthRole.ADMIN])
+    @Mutation(returns => City, {description: "Cambia el estado de activacion de la ciudad al valor opuesto."})
+    async toggleCityActivation(@Arg("city", type => ID, {description: "ID de la ciudad a actualizar"}) city: string): Promise<City>{
+        let ref = CityModel.findById(city);
+
+        const doc = await ref;
+
+        assert(doc, "No existe el documento");
+
+        doc.isActive = !doc.isActive;
+
+        return (await doc.save() as DocumentType<City>);
     }
 
     @FieldResolver(returns => State, {nullable: true, description: "Estado donde se situa la ciudad"})

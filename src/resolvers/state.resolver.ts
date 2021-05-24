@@ -1,12 +1,12 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
-import { Arg, Args, Ctx, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { CitiesArguments } from "../arguments/cities.arguments";
 import { PaginationArguments } from "../arguments/pagination.arguments";
 import { StatesArguments } from "../arguments/states.arguments";
 import { CitiesFilter } from "../filters/cities.filter";
 import { City } from "../models/city.model";
-import { GideContext } from "../models/context.model";
+import { AuthRole, GideContext } from "../models/context.model";
 import { State, StateModel } from "../models/state.model";
 import { CityResolver } from "./city.resolver";
 
@@ -32,14 +32,28 @@ export class StateResolver {
     }
 
     @Query(returns => State, {description: "Obtiene el estado por medio de su ID."})
-    async state(@Arg("stateId", {description: "ID del estado a obtener."}) stateId: string): Promise<State>{
-        let ref = StateModel.findById(stateId);
+    async state(@Arg("state", type => ID, {description: "ID del estado a obtener."}) state: string): Promise<State>{
+        let ref = StateModel.findById(state);
 
         const doc = await ref;
 
         assert(doc, "No existe el documento");
 
         return doc;
+    }
+
+    @Authorized([AuthRole.ADMIN])
+    @Mutation(returns => State, {description: "Cambia el estado de activacion del estado al valor opuesto."})
+    async toggleStateActivation(@Arg("state", type => ID, {description: "ID de la ciudad a actualizar"}) state: string): Promise<State>{
+        let ref = StateModel.findById(state);
+
+        const doc = await ref;
+
+        assert(doc, "No existe el documento");
+
+        doc.isActive = !doc.isActive;
+
+        return (await doc.save() as DocumentType<State>);
     }
 
     @FieldResolver(returns => [City], {nullable: true, description: "Ciudades que se encuentran dentro de este estado."})

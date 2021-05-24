@@ -1,6 +1,6 @@
 import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
-import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { PropertiesArguments } from "../arguments/properties.arguments";
 import { PropertyInput } from "../inputs/property.input";
 import { City, CityModel } from "../models/city.model";
@@ -36,14 +36,25 @@ export class PropertyResolver {
     }
 
     @Query(returns => Property, {description: "Obtiene un inmueble por medio de su ID."})
-    async property(@Arg("propertyId", {description: "ID del inmueble a obtener."}) propertyId: string): Promise<Property>{
-        let ref = PropertyModel.findById(propertyId);
+    async property(@Arg("property", {description: "ID del inmueble a obtener."}) property: string): Promise<Property>{
+        let ref = PropertyModel.findById(property);
 
         const doc = await ref;
 
         assert(doc, "No existe el documento");
 
         return doc;
+    }
+
+    @Authorized([AuthRole.ADMIN])
+    @Mutation(returns => Property, {description: "Actualiza el estado de la solicitud de contacto"})
+    async updatePropertyStatus(
+        @Arg("property", type => ID, {description: "ID de la solicitud"}) property: string,
+        @Arg("status", type => PropertyStatus, {description: "Nuevo estado de la solicitud"}) status: PropertyStatus
+    ): Promise<Property> {
+        return await PropertyModel.findByIdAndUpdate(property, {
+            status
+        });
     }
 
     @Authorized([AuthRole.ADMIN])

@@ -1,7 +1,7 @@
 import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 import { Auth, AuthModel } from "../models/auth.model";
 import { LoginArguments } from "../arguments/login.arguments";
-import { AuthRole, GideContext } from "../models/context.model";
+import { GideContext } from "../models/context.model";
 import jwt = require("jsonwebtoken");
 import bcrypt = require("bcrypt");
 import { JWT_SECRET } from "../constants";

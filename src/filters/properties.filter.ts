@@ -1,7 +1,7 @@
 import { DocumentType } from "@typegoose/typegoose";
-import { BeAnObject, ReturnModelType } from "@typegoose/typegoose/lib/types";
+import { BeAnObject } from "@typegoose/typegoose/lib/types";
 import { QueryWithHelpers } from "mongoose";
-import { Field, ID, InputType, ObjectType } from "type-graphql";
+import { Field, ID, InputType } from "type-graphql";
 import { Filter } from "../arguments/filter.arguments";
 import { CurrencyConverter } from "../currencies/currency_converter";
 import { MapBoundsInput } from "../inputs/map_bounds.input";

@@ -1,13 +1,12 @@
-import { BeAnObject, DocumentType } from "@typegoose/typegoose/lib/types";
+import { DocumentType } from "@typegoose/typegoose/lib/types";
 import assert from "assert";
-import { QueryWithHelpers } from "mongoose";
 import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { CitiesArguments } from "../arguments/cities.arguments";
 import { PaginationArguments } from "../arguments/pagination.arguments";
 import { ZonesArguments } from "../arguments/zones.arguments";
 import { ZonesFilter } from "../filters/zones.filter";
 import { City, CityModel } from "../models/city.model";
-import {  AuthRole, GideContext } from "../models/context.model";
+import { AuthRole, GideContext } from "../models/context.model";
 import { State } from "../models/state.model";
 import { Zone } from "../models/zone.model";
 import { StateResolver } from "./state.resolver";

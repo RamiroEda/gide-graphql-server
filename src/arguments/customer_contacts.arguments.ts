@@ -1,4 +1,4 @@
-import { ArgsType, Field, ID, Int } from "type-graphql";
+import { ArgsType, Field, Int } from "type-graphql";
 import { CustomerContactsFilter } from "../filters/customer_contacts.filter";
 import { PaginationArguments } from "./pagination.arguments";
 

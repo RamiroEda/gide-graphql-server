@@ -1,7 +1,6 @@
 import { Max, Min } from "class-validator";
 import { ArgsType, Field, Int } from "type-graphql";
 import { CitiesFilter } from "../filters/cities.filter";
-import { City } from "../models/city.model";
 import { PaginationArguments } from "./pagination.arguments";
 
 @ArgsType()

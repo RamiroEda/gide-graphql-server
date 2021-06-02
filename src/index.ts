@@ -56,7 +56,7 @@ async function bootstrap() {
                 }
             }
 
-            return {};
+            return null;
         }
     });
 

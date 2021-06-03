@@ -2,7 +2,7 @@ import { DocumentType } from "@typegoose/typegoose";
 import assert from "assert";
 import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { ZonesArguments } from "../arguments/zones.arguments";
-import { ZoneInput } from "../inputs/zone.input";
+import { AddZoneInput } from "../inputs/add_zone.input";
 import { City, CityModel } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";
 import { Zone, ZoneModel } from "../models/zone.model";
@@ -65,7 +65,7 @@ export class ZoneResolver {
 
     @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Zone, {description: "Añade una zona dentro de una ciudad al sistema. Admin role required."})
-    async addZone(@Arg("data") data: ZoneInput): Promise<Zone> {
+    async addZone(@Arg("data") data: AddZoneInput): Promise<Zone> {
         const doc = await ZoneModel.create(data);
 
         if(data.cityId) {

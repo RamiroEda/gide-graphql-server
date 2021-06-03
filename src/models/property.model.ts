@@ -1,3 +1,4 @@
+import { File } from "@google-cloud/storage";
 import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { Field, Float, ID, Int, ObjectType } from "type-graphql";
 import { City } from "./city.model";
@@ -85,13 +86,14 @@ export class Property implements BaseModel {
     @Field({description: "Estado del inmueble en el sistema de compraventa"})
     status!: PropertyStatus;
 
-    @prop()
-    @Field({description: "Fecha de la creacion del documento"})
-    readonly createdAt!: Date;
+    @prop({ ref: () => File })
+    pictures!: Ref<File>[];
 
-    @prop()
-    @Field({description: "Fecha de la modificacion del documento"})
-    updatedAt!: Date;
+    @Field({description: "Fecha de adicion del documento"})
+    readonly createdAt: Date;
+
+    @Field({description: "Fecha de modificacion del documento"})
+    updatedAt: Date;
 }
 
 

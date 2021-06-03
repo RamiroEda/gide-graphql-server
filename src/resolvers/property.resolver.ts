@@ -1,19 +1,24 @@
-import { DocumentType } from "@typegoose/typegoose";
+import { DocumentType, mongoose } from "@typegoose/typegoose";
 import assert from "assert";
 import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { PropertiesArguments } from "../arguments/properties.arguments";
 import { CurrencyConverter } from "../currencies/currency_converter";
-import { PropertyInput } from "../inputs/property.input";
+import { AddPropertyInput } from "../inputs/add_property.input";
 import { City, CityModel } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";
+import { File } from "../models/file.model";
 import { Location, locationToGeoJSON } from "../models/location.model";
 import { Property, PropertyModel } from "../models/property.model";
 import { PropertyStatus } from "../models/property_status.model";
 import { State, StateModel } from "../models/state.model";
 import { Zone } from "../models/zone.model";
 import { CityResolver } from "./city.resolver";
+import { FileResolver } from "./file.resolver";
 import { StateResolver } from "./state.resolver";
 import { ZoneResolver } from "./zone.resolver";
+import path = require("path");
+import { FilesArguments } from "../arguments/files.arguments";
+import { FilesFilter } from "../filters/files.filter";
 
 @Resolver(Property)
 export class PropertyResolver {
@@ -70,8 +75,9 @@ export class PropertyResolver {
 
     @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Property, {description: "Añade un inmueble dentro del sistema de compraventa. Admin role required."})
-    async addProperty(@Arg("data", {description: "Información a ingresar en el sistema de compraventa"}) data: PropertyInput): Promise<Property>{
+    async addProperty(@Arg("data", {description: "Información a ingresar en el sistema de compraventa"}) data: AddPropertyInput): Promise<Property>{
         assert(data.houseSize <= data.lotSize, "El area construida debe ser menor o igual al area del lote.");
+        assert(data.propertyPictures.length > 0, "Debe subirse al menos una fotografia");
 
         const stateDocument = await StateModel.findById(data.stateId);
 
@@ -85,15 +91,44 @@ export class PropertyResolver {
             assert(cityDocument.zones.includes(data.zoneId), "La Zona seleccionada no se encuentra dentro de la Ciudad.")
         }
 
+        const fileResolver = new FileResolver();
+        const pictures: File[] = [];
+        const objectId = mongoose.Types.ObjectId();
+
+        for (const file of data.propertyPictures) {
+            pictures.push(await fileResolver.uploadFile({
+                bucketPath: path.join("properties", objectId.toHexString()),
+                fileUpload: file
+            }));
+        }
 
         return await PropertyModel.create({
+            _id: objectId,
             ...data,
             city: data.cityId,
             state: data.stateId,
             zone: data.zoneId,
+            pictures: pictures.map((pic) => pic._id),
             status: PropertyStatus.AVAILABLE,
             location: locationToGeoJSON(data.location)
         });
+    }
+
+    @FieldResolver(type => [File], {description: "Lista de fotografias del inmueble"})
+    async pictures(@Root() property: DocumentType<Property>): Promise<File[]>{
+        const args = new FilesArguments();
+        
+        const filter = new FilesFilter();
+        filter.ids = property.pictures.map((pic) => pic.toString());
+
+        args.find = filter;
+
+        return await new FileResolver().files(args);
+    }
+
+    @FieldResolver(type => File, {description: "La primer imagen de la lista de fotografias"})
+    async thumbnail(@Root() property: DocumentType<Property>): Promise<File>{
+        return await new FileResolver().file(property.pictures[0].toString());
     }
 
     @FieldResolver(returns => Location, {description: "Ubicación geografica del inmueble."})

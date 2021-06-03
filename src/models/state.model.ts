@@ -24,11 +24,9 @@ export class State implements BaseModel {
     @Field({description: "Si la ciudad se encuentra activada dentro del sistema."})
     isActive: boolean;
 
-    @prop()
     @Field({description: "Fecha de adicion del documento"})
     readonly createdAt: Date;
 
-    @prop()
     @Field({description: "Fecha de modificacion del documento"})
     updatedAt: Date;
 }

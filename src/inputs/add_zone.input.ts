@@ -3,7 +3,7 @@ import { Zone } from "../models/zone.model";
 import { MapBoundsInput } from "./map_bounds.input";
 
 @InputType()
-export class ZoneInput implements Omit<Zone, "_id" | "createdAt" | "updatedAt" | "bounds" | "isActive" | "city"> {
+export class AddZoneInput implements Omit<Zone, "_id" | "createdAt" | "updatedAt" | "bounds" | "isActive" | "city"> {
     @Field({description: "Nombre de la zona"})
     name: string;
 

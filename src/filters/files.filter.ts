@@ -2,8 +2,8 @@ import { DocumentType } from "@typegoose/typegoose";
 import { BeAnObject } from "@typegoose/typegoose/lib/types";
 import { QueryWithHelpers } from "mongoose";
 import { Field, ID, InputType } from "type-graphql";
-import { Filter } from "../arguments/filter.arguments";
 import { File } from "../models/file.model";
+import { Filter } from "./filter";
 
 
 

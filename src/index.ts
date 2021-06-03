@@ -52,7 +52,7 @@ async function bootstrap() {
                         };
                     }
                 } catch (e) {
-                    console.error(e);
+                    console.error(e.message);
                 }
             }
 

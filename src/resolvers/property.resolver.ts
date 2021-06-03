@@ -36,6 +36,10 @@ export class PropertyResolver {
             });
         }
 
+        if(args.sort){
+            ref = args.sort.sort(ref);
+        }
+
         ref = args.paginate(ref);
 
         return await Promise.all(

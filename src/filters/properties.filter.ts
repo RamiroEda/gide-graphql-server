@@ -2,7 +2,7 @@ import { DocumentType } from "@typegoose/typegoose";
 import { BeAnObject } from "@typegoose/typegoose/lib/types";
 import { QueryWithHelpers } from "mongoose";
 import { Field, ID, InputType } from "type-graphql";
-import { Filter } from "../arguments/filter.arguments";
+import { Filter } from "./filter";
 import { CurrencyConverter } from "../currencies/currency_converter";
 import { MapBoundsInput } from "../inputs/map_bounds.input";
 import { AvailableCurrency, AVAILABLE_CURRECIES } from "../models/available_currencies.model";
@@ -68,8 +68,6 @@ export class PropertiesFilter extends Filter<Property> {
         ref = this.filter(ref);
 
         if(this.price){
-            console.log(AVAILABLE_CURRECIES);
-            
             const ranges = await Promise.all(
                 AVAILABLE_CURRECIES.map<Promise<PriceRange>>(async (key) => {
                     return {

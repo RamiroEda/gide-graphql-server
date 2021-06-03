@@ -24,11 +24,9 @@ export class Zone implements BaseModel {
     @Field({description: "Si la zona esta activada en el sistema"})
     isActive: boolean;
 
-    @prop()
     @Field({description: "Fecha de adicion del documento"})
     readonly createdAt: Date;
 
-    @prop()
     @Field({description: "Fecha de modificacion del documento"})
     updatedAt: Date;
 }

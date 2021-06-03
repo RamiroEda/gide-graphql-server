@@ -89,13 +89,11 @@ export class Property implements BaseModel {
     @prop({ ref: () => File })
     pictures!: Ref<File>[];
 
-    @prop()
-    @Field({description: "Fecha de la creacion del documento"})
-    readonly createdAt!: Date;
+    @Field({description: "Fecha de adicion del documento"})
+    readonly createdAt: Date;
 
-    @prop()
-    @Field({description: "Fecha de la modificacion del documento"})
-    updatedAt!: Date;
+    @Field({description: "Fecha de modificacion del documento"})
+    updatedAt: Date;
 }
 
 

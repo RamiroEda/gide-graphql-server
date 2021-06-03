@@ -1,32 +1,33 @@
 import { getModelForClass, prop } from "@typegoose/typegoose";
-import { Field, ObjectType } from "type-graphql";
+import { Field, ID, ObjectType } from "type-graphql";
 import { BaseModel } from "./model";
 
 
-@ObjectType()
+@ObjectType({description: "Archivo subido dentro del sistema"})
 export class File implements BaseModel{
+    @Field(type => ID, {description: "ID del archivo"})
     readonly _id: string;
 
-    @Field()
+    @Field({description: "URL publica del archivo"})
     @prop()
     url: string;
 
-    @Field()
+    @Field({description: "Tipo de extension multipropósito de correo de internet"})
     @prop()
     mimeType: string;
 
-    @Field()
+    @Field({description: "Nombre del archivo. Incluye la extencion."})
     @prop()
     fileName: string;
 
-    @Field()
+    @Field({description: "Codificacion del archivo"})
     @prop()
     encoding: string;
 
-    @Field()
-    createdAt: Date;
+    @Field({description: "Fecha de adicion del documento"})
+    readonly createdAt: Date;
 
-    @Field()
+    @Field({description: "Fecha de modificacion del documento"})
     updatedAt: Date;
 }
 

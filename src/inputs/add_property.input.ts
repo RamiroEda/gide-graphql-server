@@ -59,6 +59,6 @@ export class AddPropertyInput implements Omit<Property, "_id" | "location" | "st
     @Field(type => Boolean, {nullable: true, description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
     arePetsAllowed?: boolean;
 
-    @Field(type => [GraphQLUpload], {description: "Imagenes a mostrar en el"})
-    propertyPhotos: FileUpload[];
+    @Field(type => [GraphQLUpload], {description: "Fotografias del inmueble"})
+    propertyPictures: FileUpload[];
 }

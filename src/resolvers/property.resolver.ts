@@ -73,7 +73,7 @@ export class PropertyResolver {
     @Mutation(returns => Property, {description: "Añade un inmueble dentro del sistema de compraventa. Admin role required."})
     async addProperty(@Arg("data", {description: "Información a ingresar en el sistema de compraventa"}) data: AddPropertyInput): Promise<Property>{
         assert(data.houseSize <= data.lotSize, "El area construida debe ser menor o igual al area del lote.");
-        assert(data.propertyPhotos.length > 0, "Debe subirse al menos una fotografia");
+        assert(data.propertyPictures.length > 0, "Debe subirse al menos una fotografia");
 
         const stateDocument = await StateModel.findById(data.stateId);
 
@@ -91,7 +91,7 @@ export class PropertyResolver {
         const pictures: File[] = [];
         const objectId = mongoose.Types.ObjectId();
 
-        for (const file of data.propertyPhotos) {
+        for (const file of data.propertyPictures) {
             pictures.push(await fileResolver.uploadFile({
                 bucketPath: path.join("properties", objectId.toHexString()),
                 fileUpload: file
@@ -110,7 +110,7 @@ export class PropertyResolver {
         });
     }
 
-    @FieldResolver(type => [File])
+    @FieldResolver(type => [File], {description: "Lista de fotografias del inmueble"})
     async pictures(@Root() property: DocumentType<Property>): Promise<File[]>{
         const args = new FilesArguments();
         
@@ -122,7 +122,7 @@ export class PropertyResolver {
         return await new FileResolver().files(args);
     }
 
-    @FieldResolver(type => [File])
+    @FieldResolver(type => File, {description: "La primer imagen de la lista de fotografias"})
     async thumbnail(@Root() property: DocumentType<Property>): Promise<File>{
         return await new FileResolver().file(property.pictures[0].toString());
     }

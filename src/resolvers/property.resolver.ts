@@ -76,7 +76,6 @@ export class PropertyResolver {
     @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Property, {description: "Añade un inmueble dentro del sistema de compraventa. Admin role required."})
     async addProperty(@Arg("data", {description: "Información a ingresar en el sistema de compraventa"}) data: AddPropertyInput): Promise<Property>{
-        assert(data.houseSize <= data.lotSize, "El area construida debe ser menor o igual al area del lote.");
         assert(data.propertyPictures.length > 0, "Debe subirse al menos una fotografia");
 
         const stateDocument = await StateModel.findById(data.stateId);

@@ -43,31 +43,35 @@ export class FileResolver {
     @Authorized(AuthRole.ADMIN)
     @Mutation(returns => File)
     async uploadFile(@Arg("data") { bucketPath, fileUpload }: UploadFileInput): Promise<File>{
+        const file = await fileUpload;
+        
+        
         return new Promise((resolve, reject) => {
-            const fullPath = path.join(bucketPath, fileUpload.filename);
-            const readStream = fileUpload.createReadStream();
+            const fullPath = path.join(bucketPath, file.filename);
+            const readStream = file.createReadStream();
 
             const uploadStream = this.storage
                 .bucket("gide_uploads_bucket")
                 .file(fullPath)
                 .createWriteStream({
                     metadata: {
-                        contentType: fileUpload.mimetype
+                        contentType: file.mimetype
                     }
                 });
 
             readStream
                 .pipe(uploadStream)
                 .on('finish', async () => {
-                    readStream.close();
-                    const fileDocument = await FileModel.create({
+                    const fileDocument: File = await FileModel.create({
                         bucketPath: fullPath,
-                        fileName: fileUpload.filename,
-                        encoding: fileUpload.encoding,
-                        mimeType: fileUpload.mimetype
+                        fileName: file.filename,
+                        encoding: file.encoding,
+                        mimeType: file.mimetype
                     });
+                    
                     resolve({
                         ...fileDocument,
+                        _id: fileDocument._id,
                         url: (await this.storage.bucket("gide_uploads_bucket").file(fullPath).getSignedUrl({
                             version: 'v2',
                             action: "read",

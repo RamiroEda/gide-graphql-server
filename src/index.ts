@@ -34,7 +34,9 @@ async function bootstrap() {
             maxFiles: 20,
             maxFileSize: 1024 * 1024 * 50
         },
-        cors: false,
+        cors: {
+            origin: "*"
+        },
         context: async function (expressContext: ExpressContext): Promise<GideContext> {
             const token = expressContext.req.headers.authorization?.split(" ");
 

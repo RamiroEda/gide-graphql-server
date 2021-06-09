@@ -8,6 +8,7 @@ import { customAuthChecker } from "./auth";
 import { GideContext } from "./models/context.model";
 import { ExpressContext } from "apollo-server-express";
 import jwt = require("jsonwebtoken");
+import cors = require("cors");
 import { AuthModel } from "./models/auth.model";
 
 async function bootstrap() {
@@ -35,7 +36,10 @@ async function bootstrap() {
             maxFileSize: 1024 * 1024 * 50
         },
         cors: {
-            origin: "*"
+            credentials: true,
+            origin: (origin, callback) => {
+                callback(null, true);
+            }
         },
         context: async function (expressContext: ExpressContext): Promise<GideContext> {
             const token = expressContext.req.headers.authorization?.split(" ");

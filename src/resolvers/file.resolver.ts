@@ -63,21 +63,17 @@ export class FileResolver {
                 .pipe(uploadStream)
                 .on('finish', async () => {
                     const fileDocument: File = await FileModel.create({
-                        bucketPath: fullPath,
+                        url: (await this.storage.bucket("gide_uploads_bucket").file(fullPath).getSignedUrl({
+                            version: 'v2',
+                            action: "read",
+                            expires: Date.now() + 1000 * 60 * 24 * 365 * 100
+                        }))[0],
                         fileName: file.filename,
                         encoding: file.encoding,
                         mimeType: file.mimetype
                     });
                     
-                    resolve({
-                        ...fileDocument,
-                        _id: fileDocument._id,
-                        url: (await this.storage.bucket("gide_uploads_bucket").file(fullPath).getSignedUrl({
-                            version: 'v2',
-                            action: "read",
-                            expires: Date.now() + 1000 * 60 * 24 * 365 * 100
-                        }))[0]
-                    });
+                    resolve(fileDocument);
                 }).on('error', (err) => {
                     reject(err);
                 });

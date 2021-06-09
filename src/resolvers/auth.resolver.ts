@@ -19,9 +19,7 @@ export class AuthResolver {
             if (bcrypt.compareSync(password, userDocument.password)) {
                 const accessToken = jwt.sign({
                     _id: userDocument._id
-                }, JWT_SECRET, {
-                    expiresIn: "1d"
-                });
+                }, JWT_SECRET);
     
                 return await AuthModel.create({
                     userId: userDocument._id,

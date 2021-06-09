@@ -30,6 +30,10 @@ async function bootstrap() {
         schema,
         introspection: true,
         playground: true,
+        uploads: {
+            maxFiles: 20,
+            maxFileSize: 1024 * 1024 * 50
+        },
         context: async function (expressContext: ExpressContext): Promise<GideContext> {
             const token = expressContext.req.headers.authorization?.split(" ");
 

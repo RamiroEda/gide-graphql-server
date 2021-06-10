@@ -34,6 +34,14 @@ export class PropertyResolver {
             ref = ref.find({
                 status: PropertyStatus.AVAILABLE
             });
+        }else{
+            if(!args.find?.status){
+                ref = ref.find({
+                    status: {
+                        $ne: PropertyStatus.UNAVAILABLE
+                    }
+                });
+            }
         }
 
         if(args.sort){

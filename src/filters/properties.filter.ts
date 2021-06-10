@@ -31,7 +31,7 @@ export class PropertiesFilter extends Filter<Property> {
     @Field(type => ID, {nullable: true, description: "Filtra por zona dentro de la ciudad"})
     zone?: string;
 
-    @Field({nullable: true, description: "Filtra por estado de la propiedad"})
+    @Field(type => PropertyStatus, {nullable: true, description: "Filtra por estado de la propiedad"})
     status?: PropertyStatus;
 
     @Field({nullable: true, description: "Filtra por la disponibilidad de aceptar mascotas"})

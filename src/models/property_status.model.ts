@@ -2,7 +2,8 @@ import { registerEnumType } from "type-graphql";
 
 export enum PropertyStatus {
     SOLD = "sold",
-    AVAILABLE = "available"
+    AVAILABLE = "available",
+    UNAVAILABLE = "unavailable"
 }
 
 registerEnumType(PropertyStatus, {

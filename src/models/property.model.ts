@@ -44,7 +44,7 @@ export class Property implements BaseModel {
     postalCode!: string;
 
     @prop({ enum: PropertyType })
-    @Field({description: "Tipo de inmueble"})
+    @Field(type => PropertyType, {description: "Tipo de inmueble"})
     propertyType!: PropertyType;
 
     @prop()
@@ -72,7 +72,7 @@ export class Property implements BaseModel {
     parkingSpotCount!: number;
 
     @prop({ enum: DevelopmentType })
-    @Field({description: "El tipo de desarrollo llevado a cabo en la zona residencial del inmueble"})
+    @Field(type => DevelopmentType, {description: "El tipo de desarrollo llevado a cabo en la zona residencial del inmueble"})
     developmentType!: DevelopmentType;
 
     @prop()
@@ -83,7 +83,7 @@ export class Property implements BaseModel {
     location!: GeoJSONPoint;
 
     @prop({ enum: PropertyStatus })
-    @Field({description: "Estado del inmueble en el sistema de compraventa"})
+    @Field(type => PropertyStatus, {description: "Estado del inmueble en el sistema de compraventa"})
     status!: PropertyStatus;
 
     @prop({ ref: () => File })

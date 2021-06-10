@@ -19,6 +19,9 @@ import { ZoneResolver } from "./zone.resolver";
 import path = require("path");
 import { FilesArguments } from "../arguments/files.arguments";
 import { FilesFilter } from "../filters/files.filter";
+import { UpdatePropertyInput } from "../inputs/update_property.input";
+import { cleanObject } from "../utils";
+import { TristateBoolean } from "../models/tristate_boolean";
 
 @Resolver(Property)
 export class PropertyResolver {
@@ -118,6 +121,48 @@ export class PropertyResolver {
             pictures: pictures.map((pic) => pic._id),
             status: PropertyStatus.AVAILABLE,
             location: locationToGeoJSON(data.location)
+        });
+    }
+
+    @Authorized([AuthRole.ADMIN])
+    @Mutation(returns => Property, {description: "Añade un inmueble dentro del sistema de compraventa. Admin role required."})
+    async updateProperty(@Arg("data", {description: "Información a actualizar en el sistema de compraventa"}) data: UpdatePropertyInput): Promise<Property>{
+        if(data.stateId || data.cityId || data.zoneId){
+            assert(data.stateId && data.cityId, "Deben actualizarse los dos IDs simultaneamente");
+            const stateDocument = await StateModel.findById(data.stateId);
+
+            assert(stateDocument, "El identificador del Estado no existe.");
+            
+            assert(stateDocument.cities.includes(data.cityId), "La Ciudad seleccionada no se encuentra dentro del Estado.")
+            const cityDocument = await CityModel.findById(data.cityId);
+
+            assert(cityDocument, "El identificador de la Ciudad no existe.");
+            assert(cityDocument.zones.includes(data.zoneId), "La Zona seleccionada no se encuentra dentro de la Ciudad.")
+        }
+
+        const arePetsAllowedTmp = data.arePetsAllowed;
+        delete data.arePetsAllowed;
+        const dataTmp: any = data;
+
+        if(arePetsAllowedTmp != null){
+            switch(arePetsAllowedTmp){
+                case TristateBoolean.TRUE:
+                    dataTmp.arePetsAllowed = true;
+                    break;
+                case TristateBoolean.FALSE:
+                    dataTmp.arePetsAllowed = false;
+                    break;
+                case TristateBoolean.NULL:
+                    dataTmp.arePetsAllowed = null;
+                    break;
+            }
+        }
+
+        return await PropertyModel.findByIdAndUpdate(data._id, cleanObject({
+            ...dataTmp,
+            location: locationToGeoJSON(dataTmp.location)
+        }), {
+            new: true
         });
     }
 

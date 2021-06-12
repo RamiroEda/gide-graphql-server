@@ -31,9 +31,7 @@ export class FileResolver {
     @Authorized(AuthRole.ADMIN)
     @Query(returns => File, {description: "Obtiene el archivo por medio de su ID. En caso de no existir tira un error."})
     async file(@Arg("file", type => ID, {description: "ID del archivo a buscar"}) file: string): Promise<File> {
-        let ref = FileModel.findById(file);
-
-        const doc = await ref;
+        const doc = await FileModel.findById(file);
 
         assert(doc, "No existe el documento");
 
@@ -44,7 +42,6 @@ export class FileResolver {
     @Mutation(returns => File)
     async uploadFile(@Arg("data") { bucketPath, fileUpload }: UploadFileInput): Promise<File>{
         const file = await fileUpload;
-        
         
         return new Promise((resolve, reject) => {
             const fullPath = path.join(bucketPath, file.filename);

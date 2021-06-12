@@ -3,6 +3,7 @@ import assert from "assert";
 import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { ZonesArguments } from "../arguments/zones.arguments";
 import { AddZoneInput } from "../inputs/add_zone.input";
+import { UpdateZoneInput } from "../inputs/update_zone.input";
 import { City, CityModel } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";
 import { Zone, ZoneModel } from "../models/zone.model";
@@ -31,9 +32,7 @@ export class ZoneResolver {
 
     @Query(returns => Zone, {description: "Obtiene una zona por medio de su ID."})
     async zone(@Arg("zone", {description: "ID de la zona a obtener"}) zone: string): Promise<Zone> {
-        let ref = ZoneModel.findById(zone);
-
-        const doc = await ref;
+        const doc = await ZoneModel.findById(zone);
 
         assert(doc, "No existe el documento");
 
@@ -43,13 +42,29 @@ export class ZoneResolver {
     @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Zone, {description: "Cambia el estado de activacion de la zona al valor opuesto."})
     async toggleZoneActivation(@Arg("zone", type => ID, {description: "ID de la ciudad a actualizar"}) zone: string): Promise<Zone>{
-        let ref = ZoneModel.findById(zone);
-
-        const doc = await ref;
+        const doc = await ZoneModel.findById(zone);
 
         assert(doc, "No existe el documento");
 
         doc.isActive = !doc.isActive;
+
+        return (await doc.save() as DocumentType<Zone>);
+    }
+
+    @Authorized([AuthRole.ADMIN])
+    @Mutation(returns => Zone, {description: "Cambia el estado de activacion de la zona al valor opuesto."})
+    async updateZone(@Arg("data") args: UpdateZoneInput): Promise<Zone>{
+        const doc = await ZoneModel.findById(args._id);
+
+        assert(doc, "No existe el documento");
+
+        if(args.name){
+            doc.name = args.name;
+        }
+
+        if(args.bounds){
+            doc.bounds = args.bounds;
+        }
 
         return (await doc.save() as DocumentType<Zone>);
     }

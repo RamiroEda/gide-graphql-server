@@ -56,9 +56,7 @@ export class PropertyResolver {
 
     @Query(returns => Property, {description: "Obtiene un inmueble por medio de su ID."})
     async property(@Arg("property", {description: "ID del inmueble a obtener."}) property: string): Promise<Property>{
-        let ref = PropertyModel.findById(property);
-
-        const doc = await ref;
+        const doc = await PropertyModel.findById(property);
 
         assert(doc, "No existe el documento");
 
@@ -73,6 +71,8 @@ export class PropertyResolver {
     ): Promise<Property> {
         return await PropertyModel.findByIdAndUpdate(property, {
             status
+        }, {
+            new: true
         });
     }
 

@@ -64,19 +64,6 @@ export class PropertyResolver {
     }
 
     @Authorized([AuthRole.ADMIN])
-    @Mutation(returns => Property, {description: "Actualiza el estado de la solicitud de contacto"})
-    async updatePropertyStatus(
-        @Arg("property", type => ID, {description: "ID de la solicitud"}) property: string,
-        @Arg("status", type => PropertyStatus, {description: "Nuevo estado de la solicitud"}) status: PropertyStatus
-    ): Promise<Property> {
-        return await PropertyModel.findByIdAndUpdate(property, {
-            status
-        }, {
-            new: true
-        });
-    }
-
-    @Authorized([AuthRole.ADMIN])
     @Mutation(returns => Property, {description: "Añade un inmueble dentro del sistema de compraventa. Admin role required."})
     async addProperty(@Arg("data", {description: "Información a ingresar en el sistema de compraventa"}) data: AddPropertyInput): Promise<Property>{
         assert(data.propertyPictures.length > 0, "Debe subirse al menos una fotografia");

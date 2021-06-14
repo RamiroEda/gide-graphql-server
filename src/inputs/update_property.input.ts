@@ -1,6 +1,7 @@
 import { GraphQLUpload, FileUpload } from "graphql-upload";
 import { Field, Float, ID, InputType, Int } from "type-graphql";
 import { DevelopmentType } from "../models/development_type.model";
+import { PropertyStatus } from "../models/property_status.model";
 import { PropertyType } from "../models/property_type.model";
 import { TristateBoolean } from "../models/tristate_boolean";
 import { LocationInput } from "./location.input";
@@ -64,4 +65,7 @@ export class UpdatePropertyInput {
 
     @Field(type => [GraphQLUpload], {description: "Fotografias del inmueble", nullable: true})
     propertyPictures?: FileUpload[];
+
+    @Field(type => PropertyStatus, {nullable: true, description: "El estado de la propiedad"})
+    status?: PropertyStatus;
 }

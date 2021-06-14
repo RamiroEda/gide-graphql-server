@@ -5,6 +5,7 @@ import { CitiesArguments } from "../arguments/cities.arguments";
 import { PaginationArguments } from "../arguments/pagination.arguments";
 import { StatesArguments } from "../arguments/states.arguments";
 import { CitiesFilter } from "../filters/cities.filter";
+import { UpdateStateInput } from "../inputs/update_state.input";
 import { City } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";
 import { State, StateModel } from "../models/state.model";
@@ -33,9 +34,7 @@ export class StateResolver {
 
     @Query(returns => State, {description: "Obtiene el estado por medio de su ID."})
     async state(@Arg("state", type => ID, {description: "ID del estado a obtener."}) state: string): Promise<State>{
-        let ref = StateModel.findById(state);
-
-        const doc = await ref;
+        const doc = await StateModel.findById(state);
 
         assert(doc, "No existe el documento");
 
@@ -45,13 +44,25 @@ export class StateResolver {
     @Authorized([AuthRole.ADMIN])
     @Mutation(returns => State, {description: "Cambia el estado de activacion del estado al valor opuesto."})
     async toggleStateActivation(@Arg("state", type => ID, {description: "ID de la ciudad a actualizar"}) state: string): Promise<State>{
-        let ref = StateModel.findById(state);
-
-        const doc = await ref;
+        const doc = await StateModel.findById(state);
 
         assert(doc, "No existe el documento");
 
         doc.isActive = !doc.isActive;
+
+        return (await doc.save() as DocumentType<State>);
+    }
+
+    @Authorized([AuthRole.ADMIN])
+    @Mutation(returns => State, {description: "Actualiza los datos del estado"})
+    async updateState(@Arg("data", {description: "Datos a actualizar"}) args: UpdateStateInput): Promise<State>{
+        const doc = await StateModel.findById(args._id);
+
+        assert(doc, "No existe el documento");
+
+        if(args.bounds){
+            doc.bounds = args.bounds;
+        }
 
         return (await doc.save() as DocumentType<State>);
     }

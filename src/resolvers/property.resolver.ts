@@ -64,24 +64,11 @@ export class PropertyResolver {
 
     @Query(returns => Property, {description: "Obtiene un inmueble por medio de su ID."})
     async property(@Arg("property", {description: "ID del inmueble a obtener."}) property: string): Promise<Property>{
-        let ref = PropertyModel.findById(property);
-
-        const doc = await ref;
+        const doc = await PropertyModel.findById(property);
 
         assert(doc, "No existe el documento");
 
         return doc;
-    }
-
-    @Authorized([AuthRole.ADMIN])
-    @Mutation(returns => Property, {description: "Actualiza el estado de la solicitud de contacto"})
-    async updatePropertyStatus(
-        @Arg("property", type => ID, {description: "ID de la solicitud"}) property: string,
-        @Arg("status", type => PropertyStatus, {description: "Nuevo estado de la solicitud"}) status: PropertyStatus
-    ): Promise<Property> {
-        return await PropertyModel.findByIdAndUpdate(property, {
-            status
-        });
     }
 
     @Authorized([AuthRole.ADMIN])

@@ -30,9 +30,7 @@ export class CustomerContactResolver {
     @Authorized([AuthRole.ADMIN])
     @Query(returns => CustomerContact, {description: "Obtiene la solicitud de contacto por medio de su ID. En caso de no existir tira un error."})
     async customerContact(@Arg("customerContact", type => ID, {description: "ID de la solicitud a buscar"}) customerContact: string): Promise<CustomerContact> {
-        let ref = CustomerContactModel.findById(customerContact);
-
-        const doc = await ref;
+        const doc = await CustomerContactModel.findById(customerContact);
 
         assert(doc, "No existe el documento");
 
@@ -41,6 +39,7 @@ export class CustomerContactResolver {
 
     @Mutation(returns => CustomerContact, {description: "Registra una solicitud de contacto en el sistema"})
     async sendContactInformation(@Arg("data", {description: "Información de contacto a ingresar en el sistema."}) data: SendContactInformationInput): Promise<CustomerContact> {
+        //TODO: Mandar correo electronico al administrador
         return await CustomerContactModel.create(data);
     }
 
@@ -52,6 +51,8 @@ export class CustomerContactResolver {
     ): Promise<CustomerContact> {
         return await CustomerContactModel.findByIdAndUpdate(customerContact, {
             status
+        }, {
+            new: true
         });
     }
 

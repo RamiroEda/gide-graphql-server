@@ -77,7 +77,7 @@ export class Property implements BaseModel {
 
     @prop()
     @Field({description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
-    arePetsAllowed?: boolean;
+    arePetsAllowed: boolean;
 
     @prop()
     location!: GeoJSONPoint;

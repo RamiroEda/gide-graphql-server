@@ -21,7 +21,6 @@ import { FilesArguments } from "../arguments/files.arguments";
 import { FilesFilter } from "../filters/files.filter";
 import { UpdatePropertyInput } from "../inputs/update_property.input";
 import { cleanObject } from "../utils";
-import { TristateBoolean } from "../models/tristate_boolean";
 
 @Resolver(Property)
 export class PropertyResolver {
@@ -127,27 +126,10 @@ export class PropertyResolver {
             assert(cityDocument.zones.includes(data.zoneId), "La Zona seleccionada no se encuentra dentro de la Ciudad.")
         }
 
-        const arePetsAllowedTmp = data.arePetsAllowed;
-        delete data.arePetsAllowed;
-        const dataTmp: any = data;
-
-        if(arePetsAllowedTmp != null){
-            switch(arePetsAllowedTmp){
-                case TristateBoolean.TRUE:
-                    dataTmp.arePetsAllowed = true;
-                    break;
-                case TristateBoolean.FALSE:
-                    dataTmp.arePetsAllowed = false;
-                    break;
-                case TristateBoolean.NULL:
-                    dataTmp.arePetsAllowed = null;
-                    break;
-            }
-        }
 
         return await PropertyModel.findByIdAndUpdate(data._id, cleanObject({
-            ...dataTmp,
-            location: locationToGeoJSON(dataTmp.location)
+            ...data,
+            location: locationToGeoJSON(data.location)
         }), {
             new: true
         });

@@ -59,8 +59,8 @@ export class UpdatePropertyInput {
     @Field(type => DevelopmentType, {description: "El tipo de desarrollo llevado a cabo en la zona residencial del inmueble", nullable: true})
     developmentType?: DevelopmentType;
 
-    @Field(type => Boolean, {description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
-    arePetsAllowed: boolean;
+    @Field(type => Boolean, {nullable: true, description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
+    arePetsAllowed?: boolean;
 
     @Field(type => [GraphQLUpload], {description: "Fotografias del inmueble", nullable: true})
     propertyPictures?: FileUpload[];

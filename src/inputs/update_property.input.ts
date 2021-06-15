@@ -5,6 +5,7 @@ import { PropertyStatus } from "../models/property_status.model";
 import { PropertyType } from "../models/property_type.model";
 import { LocationInput } from "./location.input";
 import { PriceInput } from "./price.input";
+import { UpdateFileInput } from "./update_file.input";
 
 @InputType({description: "Entrada de un nuevo inmueble"})
 export class UpdatePropertyInput {
@@ -62,8 +63,8 @@ export class UpdatePropertyInput {
     @Field(type => Boolean, {nullable: true, description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
     arePetsAllowed?: boolean;
 
-    @Field(type => [GraphQLUpload], {description: "Fotografias del inmueble", nullable: true})
-    propertyPictures?: FileUpload[];
+    @Field(type => [UpdateFileInput], {description: "Fotografias del inmueble", nullable: true})
+    propertyPictures?: UpdateFileInput[];
 
     @Field(type => PropertyStatus, {nullable: true, description: "El estado de la propiedad"})
     status?: PropertyStatus;

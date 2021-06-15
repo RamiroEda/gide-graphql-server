@@ -1,12 +1,12 @@
 import { DocumentType, mongoose } from "@typegoose/typegoose";
 import assert from "assert";
-import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { PropertiesArguments } from "../arguments/properties.arguments";
 import { CurrencyConverter } from "../currencies/currency_converter";
 import { AddPropertyInput } from "../inputs/add_property.input";
 import { City, CityModel } from "../models/city.model";
 import { AuthRole, GideContext } from "../models/context.model";
-import { File } from "../models/file.model";
+import { File, FileModel } from "../models/file.model";
 import { Location, locationToGeoJSON } from "../models/location.model";
 import { Property, PropertyModel } from "../models/property.model";
 import { PropertyStatus } from "../models/property_status.model";
@@ -21,6 +21,7 @@ import { FilesArguments } from "../arguments/files.arguments";
 import { FilesFilter } from "../filters/files.filter";
 import { UpdatePropertyInput } from "../inputs/update_property.input";
 import { cleanObject } from "../utils";
+import { ChangeType } from "../inputs/update_file.input";
 
 @Resolver(Property)
 export class PropertyResolver {
@@ -124,6 +125,53 @@ export class PropertyResolver {
 
             assert(cityDocument, "El identificador de la Ciudad no existe.");
             assert(cityDocument.zones.includes(data.zoneId), "La Zona seleccionada no se encuentra dentro de la Ciudad.")
+        }
+
+        if(data.propertyPictures){
+            for (const fileInput of data.propertyPictures) {
+                switch(fileInput.type){
+                    case ChangeType.CREATE:
+                        assert(fileInput.file, "CREATE: El campo file es null");
+                        const uploadedFile = await new FileResolver().uploadFile({
+                            bucketPath: path.join("properties", data._id),
+                            fileUpload: fileInput.file
+                        });
+                        await PropertyModel.findByIdAndUpdate(data._id, {
+                            $push: {
+                                pictures: uploadedFile._id
+                            }
+                        });
+                        break;
+                    case ChangeType.UPDATE:
+                        assert(fileInput.id && fileInput.file, "UPDATE: El campo file o id es null");
+                        const updatedFile = await new FileResolver().updateFile(fileInput);
+                        await PropertyModel.findByIdAndUpdate(data._id, {
+                            $set: {
+                                "pictures.$[filter]": updatedFile._id
+                            }
+                        }, {
+                            arrayFilters: [
+                                { filter: fileInput.id }
+                            ]
+                        });
+                        break;
+                    case ChangeType.DELETE: 
+                        assert(fileInput.id, "DELETE: El campo id es null");
+                        const deletedFile = await new FileResolver().deleteFile(fileInput.id);
+                        await PropertyModel.findByIdAndUpdate(data._id, {
+                            $pull: {
+                                "pictures.$[filter]": deletedFile._id
+                            }
+                        }, {
+                            arrayFilters: [
+                                { filter: fileInput.id }
+                            ]
+                        });
+                        break;
+                }
+            }
+
+            delete data.propertyPictures;
         }
 
 

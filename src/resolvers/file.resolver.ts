@@ -7,6 +7,7 @@ import path = require("path");
 import assert = require("assert");
 import { FilesArguments } from "../arguments/files.arguments";
 import { UploadFileInput } from "../inputs/upload_file.input";
+import { UpdateFileInput } from "../inputs/update_file.input";
 
 
 
@@ -75,5 +76,29 @@ export class FileResolver {
                     reject(err);
                 });
         });
+    }
+
+    @Authorized(AuthRole.ADMIN)
+    @Mutation(returns => File)
+    async updateFile(@Arg("data") { file: fileUpload, id }: UpdateFileInput): Promise<File>{
+        const deletedFile = await this.deleteFile(id);
+
+        return await this.uploadFile({
+            bucketPath: deletedFile.bucketPath,
+            fileUpload: fileUpload
+        });
+    }
+
+    @Authorized(AuthRole.ADMIN)
+    @Mutation(returns => File)
+    async deleteFile(@Arg("id", type => ID, {description: "ID del documento a eliminar"}) id: string): Promise<File>{
+        const file = await FileModel.findByIdAndDelete(id);
+
+        await this.storage
+            .bucket("gide_uploads_bucket")
+            .file(file.bucketPath)
+            .delete();
+
+        return file;
     }
 }

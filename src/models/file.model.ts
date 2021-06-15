@@ -12,6 +12,9 @@ export class File implements BaseModel{
     @prop()
     url: string;
 
+    @prop()
+    bucketPath: string;
+
     @Field({description: "Tipo de extension multipropósito de correo de internet"})
     @prop()
     mimeType: string;

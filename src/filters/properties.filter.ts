@@ -64,6 +64,15 @@ export class PropertiesFilter extends Filter<Property> {
     @Field(type => PriceRange, {nullable: true, description: "Filtra por el precio del inmueble"})
     price?: PriceRange;
 
+    @Field(type => [String], {description: "Amenidades basicas del inmueble", nullable: true})
+    basicElements?: string[];
+
+    @Field(type => [String], {description: "Amenidades del inmueble", nullable: true})
+    amenitiesSet?: string[];
+
+    @Field(type => [String], {description: "Servicios cercanos al inmueble del inmueble", nullable: true})
+    areaServices?: string[];
+
     async customFilter(ref: QueryWithHelpers<DocumentType<Property>[], DocumentType<Property>, BeAnObject>, expectedReturnCurrency: AvailableCurrency): Promise<{ ref: QueryWithHelpers<DocumentType<Property>[], DocumentType<Property>, BeAnObject> }>{
         ref = this.filter(ref);
 
@@ -210,6 +219,30 @@ export class PropertiesFilter extends Filter<Property> {
         if(this.status){
             ref = ref.find({
                 status: this.status
+            });
+        }
+
+        if(this.basicElements){
+            ref = ref.find({
+                basicElements: {
+                    $all: this.basicElements
+                }
+            });
+        }
+
+        if(this.amenitiesSet){
+            ref = ref.find({
+                amenitiesSet: {
+                    $all: this.amenitiesSet
+                }
+            });
+        }
+
+        if(this.areaServices){
+            ref = ref.find({
+                areaServices: {
+                    $all: this.areaServices
+                }
             });
         }
 

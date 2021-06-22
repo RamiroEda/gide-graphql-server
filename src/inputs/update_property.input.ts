@@ -18,6 +18,15 @@ export class UpdatePropertyInput {
     @Field(type => LocationInput, {description: "Precio del inmueble", nullable: true})
     location?: LocationInput;
 
+    @Field(type => [String], {description: "Amenidades basicas del inmueble", nullable: true})
+    basicElements?: string[];
+
+    @Field(type => [String], {description: "Amenidades del inmueble", nullable: true})
+    amenitiesSet?: string[];
+
+    @Field(type => [String], {description: "Servicios cercanos al inmueble del inmueble", nullable: true})
+    areaServices?: string[];
+
     @Field(type => ID, {nullable: true, description: "Identificador de la ciudad a la que pertenece"})
     cityId?: string;
 

@@ -27,8 +27,16 @@ export class Property implements BaseModel {
     description: string;
 
     @prop()
-    @Field({description: "Amenidades del inmueble"})
-    amenities: string;
+    @Field(type => [String], {description: "Amenidades basicas del inmueble"})
+    basicElements: string[];
+
+    @prop()
+    @Field(type => [String], {description: "Amenidades del inmueble"})
+    amenitiesSet: string[];
+
+    @prop()
+    @Field(type => [String], {description: "Servicios cercanos al inmueble del inmueble"})
+    areaServices: string[];
 
     @prop({ ref: () => City })
     city!: Ref<City>;

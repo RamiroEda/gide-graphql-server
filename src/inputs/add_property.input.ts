@@ -26,8 +26,14 @@ export class AddPropertyInput implements Omit<Property, "_id" | "location" | "st
     @Field({description: "Descripcion del inmueble"})
     description: string;
 
-    @Field({description: "Amenidades del inmueble"})
-    amenities: string;
+    @Field(type => [String], {description: "Amenidades basicas del inmueble"})
+    basicElements: string[];
+
+    @Field(type => [String], {description: "Amenidades del inmueble"})
+    amenitiesSet: string[];
+
+    @Field(type => [String], {description: "Servicios cercanos al inmueble del inmueble"})
+    areaServices: string[];
 
     @Field({description: "Codigo postal del inmueble"})
     postalCode!: string;

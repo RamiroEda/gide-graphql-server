@@ -2,10 +2,10 @@ import { File } from "@google-cloud/storage";
 import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { Field, Float, ID, Int, ObjectType } from "type-graphql";
 import { City } from "./city.model";
-import { DevelopmentType } from "./development_type.model";
 import { GeoJSONPoint } from "./geojson.model";
 import { BaseModel } from "./model";
 import { Price } from "./price.model";
+import { PropertyCondition } from "./property_condition.model";
 import { PropertyStatus } from "./property_status.model";
 import { PropertyType } from "./property_type.model";
 import { State } from "./state.model";
@@ -79,10 +79,6 @@ export class Property implements BaseModel {
     @Field(type => Int, {description: "Numero de lugares para estacionar"})
     parkingSpotCount!: number;
 
-    @prop({ enum: DevelopmentType })
-    @Field(type => DevelopmentType, {description: "El tipo de desarrollo llevado a cabo en la zona residencial del inmueble"})
-    developmentType!: DevelopmentType;
-
     @prop()
     @Field({description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
     arePetsAllowed: boolean;
@@ -96,6 +92,10 @@ export class Property implements BaseModel {
 
     @prop({ ref: () => File })
     pictures!: Ref<File>[];
+
+    @prop({ enum: PropertyCondition })
+    @Field(type => PropertyCondition, {description: "Estado de conservacion del inmueble"})
+    propertyCondition: PropertyCondition;
 
     @Field({description: "Fecha de adicion del documento"})
     readonly createdAt: Date;

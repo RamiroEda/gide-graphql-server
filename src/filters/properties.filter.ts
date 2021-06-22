@@ -6,12 +6,12 @@ import { Filter } from "./filter";
 import { CurrencyConverter } from "../currencies/currency_converter";
 import { MapBoundsInput } from "../inputs/map_bounds.input";
 import { AvailableCurrency, AVAILABLE_CURRECIES } from "../models/available_currencies.model";
-import { DevelopmentType } from "../models/development_type.model";
 import { Property } from "../models/property.model";
 import { PropertyStatus } from "../models/property_status.model";
 import { PropertyType } from "../models/property_type.model";
 import { PriceRange } from "./price_range.filter";
 import { Range } from "./range.filter";
+import { PropertyCondition } from "../models/property_condition.model";
 
 
 @InputType()
@@ -55,9 +55,6 @@ export class PropertiesFilter extends Filter<Property> {
     @Field(type => Range, {nullable: true, description: "Filtra por el numero de espacios para estacionar"})
     parkingSpotCount?: Range;
 
-    @Field(type => DevelopmentType, {nullable: true, description: "Filtra por el tipo de desarrollo inmobiliario del lugar"})
-    developmentType?: DevelopmentType;
-
     @Field(type => PropertyType, {nullable: true, description: "Filtra por el tipo de propiedad"})
     propertyType?: PropertyType;
 
@@ -72,6 +69,9 @@ export class PropertiesFilter extends Filter<Property> {
 
     @Field(type => [String], {description: "Servicios cercanos al inmueble del inmueble", nullable: true})
     areaServices?: string[];
+
+    @Field(type => PropertyCondition, {nullable: true, description: "Estado de conservacion del inmueble"})
+    propertyCondition?: PropertyCondition;
 
     async customFilter(ref: QueryWithHelpers<DocumentType<Property>[], DocumentType<Property>, BeAnObject>, expectedReturnCurrency: AvailableCurrency): Promise<{ ref: QueryWithHelpers<DocumentType<Property>[], DocumentType<Property>, BeAnObject> }>{
         ref = this.filter(ref);
@@ -191,12 +191,6 @@ export class PropertiesFilter extends Filter<Property> {
             });
         }
 
-        if(this.developmentType){
-            ref = ref.find({
-                developmentType: this.developmentType
-            });
-        }
-
         if(this.propertyType){
             ref = ref.find({
                 propertyType: this.propertyType
@@ -243,6 +237,12 @@ export class PropertiesFilter extends Filter<Property> {
                 areaServices: {
                     $all: this.areaServices
                 }
+            });
+        }
+
+        if(this.propertyCondition){
+            ref = ref.find({
+                propertyCondition: this.propertyCondition
             });
         }
 

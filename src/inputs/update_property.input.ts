@@ -1,6 +1,6 @@
 import { GraphQLUpload, FileUpload } from "graphql-upload";
 import { Field, Float, ID, InputType, Int } from "type-graphql";
-import { DevelopmentType } from "../models/development_type.model";
+import { PropertyCondition } from "../models/property_condition.model";
 import { PropertyStatus } from "../models/property_status.model";
 import { PropertyType } from "../models/property_type.model";
 import { LocationInput } from "./location.input";
@@ -66,15 +66,15 @@ export class UpdatePropertyInput {
     @Field(type => Int, {description: "Numero de lugares para estacionar", nullable: true})
     parkingSpotCount?: number;
 
-    @Field(type => DevelopmentType, {description: "El tipo de desarrollo llevado a cabo en la zona residencial del inmueble", nullable: true})
-    developmentType?: DevelopmentType;
-
     @Field(type => Boolean, {nullable: true, description: "Si estan permitidas las mascotas en la zona residencial. Si es null se considera como desconocido."})
     arePetsAllowed?: boolean;
 
     @Field(type => [UpdateFileInput], {description: "Fotografias del inmueble", nullable: true})
     propertyPictures?: UpdateFileInput[];
 
-    @Field(type => PropertyStatus, {nullable: true, description: "El estado de la propiedad"})
+    @Field(type => PropertyStatus, {nullable: true, description: "El estado del inmueble en el sistema de compraventa"})
     status?: PropertyStatus;
+
+    @Field(type => PropertyCondition, {nullable: true, description: "Estado de conservacion del inmueble"})
+    propertyCondition?: PropertyCondition;
 }

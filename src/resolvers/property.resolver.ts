@@ -218,7 +218,7 @@ export class PropertyResolver {
         return new CityResolver().city(property.city.toString());
     }
 
-    @FieldResolver(returns => Zone, {description: "Zona donde se encuentra el inmueble."})
+    @FieldResolver(returns => Zone, {description: "Zona donde se encuentra el inmueble.", nullable: true})
     async zone(@Root() property: DocumentType<Property>): Promise<Zone>{
         if(property.zone){
             return new ZoneResolver().zone(property.zone.toString());

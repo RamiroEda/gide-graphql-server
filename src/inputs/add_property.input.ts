@@ -41,10 +41,10 @@ export class AddPropertyInput implements Omit<Property, "_id" | "location" | "st
     @Field(type => PropertyType, {description: "Tipo de inmueble"})
     propertyType!: PropertyType;
 
-    @Field(type => Int, {description: "Area total del lote en metros cuadrados"})
+    @Field(type => Float, {description: "Area total del lote en metros cuadrados"})
     lotSize!: number;
 
-    @Field(type => Int, {description: "Area total construida dentro del lote en metros cuadrados. Debe ser menor o igual al area del lote."})
+    @Field(type => Float, {description: "Area total construida dentro del lote en metros cuadrados. Debe ser menor o igual al area del lote."})
     houseSize!: number;
 
     @Field(type => PriceInput, {description: "Precio de compra del inmueble"})

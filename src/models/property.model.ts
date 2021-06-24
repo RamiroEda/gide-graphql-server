@@ -56,11 +56,11 @@ export class Property implements BaseModel {
     propertyType!: PropertyType;
 
     @prop()
-    @Field(type => Int, {description: "Area total del lote en metros cuadrados"})
+    @Field(type => Float, {description: "Area total del lote en metros cuadrados"})
     lotSize!: number;
 
     @prop()
-    @Field(type => Int, {description: "Area total construida dentro del lote en metros cuadrados. Debe ser menor o igual al area del lote."})
+    @Field(type => Float, {description: "Area total construida dentro del lote en metros cuadrados. Debe ser menor o igual al area del lote."})
     houseSize!: number;
 
     @prop({ type: Price })

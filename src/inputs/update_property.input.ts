@@ -48,10 +48,10 @@ export class UpdatePropertyInput {
     @Field(type => PropertyType, {description: "Tipo de inmueble", nullable: true})
     propertyType?: PropertyType;
 
-    @Field(type => Int, {description: "Area total del lote en metros cuadrados", nullable: true})
+    @Field(type => Float, {description: "Area total del lote en metros cuadrados", nullable: true})
     lotSize?: number;
 
-    @Field(type => Int, {description: "Area total construida dentro del lote en metros cuadrados. Debe ser menor o igual al area del lote.", nullable: true})
+    @Field(type => Float, {description: "Area total construida dentro del lote en metros cuadrados. Debe ser menor o igual al area del lote.", nullable: true})
     houseSize?: number;
 
     @Field(type => PriceInput, {description: "Precio de compra del inmueble", nullable: true})

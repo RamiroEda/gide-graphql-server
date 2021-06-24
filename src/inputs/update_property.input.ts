@@ -1,4 +1,3 @@
-import { GraphQLUpload, FileUpload } from "graphql-upload";
 import { Field, Float, ID, InputType, Int } from "type-graphql";
 import { PropertyCondition } from "../models/property_condition.model";
 import { PropertyStatus } from "../models/property_status.model";

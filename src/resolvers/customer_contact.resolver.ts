@@ -8,6 +8,12 @@ import { CustomerContact, CustomerContactModel } from "../models/customer_contac
 import { CustomerStatus } from "../models/customer_status.model";
 import { Property } from "../models/property.model";
 import { PropertyResolver } from "./property.resolver";
+import nodemailer = require("nodemailer");
+import smtpTransport = require('nodemailer-smtp-transport');
+import { ADMIN_EMAIL, ADMIN_EMAIL_PASSWORD } from "../constants";
+import { HTMLParser } from "../email/html_parser";
+import { CityResolver } from "./city.resolver";
+import { StateResolver } from "./state.resolver";
 
 
 
@@ -39,7 +45,38 @@ export class CustomerContactResolver {
 
     @Mutation(returns => CustomerContact, {description: "Registra una solicitud de contacto en el sistema"})
     async sendContactInformation(@Arg("data", {description: "Información de contacto a ingresar en el sistema."}) data: SendContactInformationInput): Promise<CustomerContact> {
-        //TODO: Mandar correo electronico al administrador
+        const transporter = nodemailer.createTransport(smtpTransport({
+            service: "gmail",
+            host: 'smtp.gmail.com',
+            auth: {
+                user: ADMIN_EMAIL,
+                pass: ADMIN_EMAIL_PASSWORD
+            }
+        }));
+
+        let address: string;
+
+        if(data.propertyOfInterest){
+            const property = await new PropertyResolver().property(data.propertyOfInterest);
+            const city = await new CityResolver().city(property.city.toString());
+            const state = await new StateResolver().state(property.state.toString());
+
+            address = `${property.address}. C.P. ${property.postalCode}. ${city.name}, ${state.name}.`;
+        }
+
+        await transporter.sendMail({
+            from: `"GIDE Email Service" <${ADMIN_EMAIL}>`,
+            to: ADMIN_EMAIL,
+            subject: "Nuevas solicitud de contacto | GIDE",
+            html: await HTMLParser.parse("./templates/new_contact.template.html", {
+                NAME: data.name,
+                LASTNAME: data.lastName,
+                PHONE: data.phoneNumber,
+                EMAIL: data.email,
+                PROPERTY: data.propertyOfInterest ? `<a href="https://gide.com.mx/es-MX/properties/${data.propertyOfInterest}">${address}</a>` : "Sin registrar",
+            })
+        });
+
         return await CustomerContactModel.create(data);
     }
 

@@ -22,7 +22,9 @@ export class CustomerContactResolver {
     @Authorized([AuthRole.ADMIN])
     @Query(returns => [CustomerContact], {description: "Obtiene las solicitudes de contacto registrados en el sistema."})
     async customerContacts(@Args() args: CustomerContactsArguments): Promise<CustomerContact[]> {
-        let ref = CustomerContactModel.find();
+        let ref = CustomerContactModel.find().sort({
+            createdAt: -1
+        });
 
         if(args.find){
             ref = args.find.filter(ref);

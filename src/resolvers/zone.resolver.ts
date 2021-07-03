@@ -83,9 +83,9 @@ export class ZoneResolver {
     async addZone(@Arg("data") data: AddZoneInput): Promise<Zone> {
         const doc = await ZoneModel.create(data);
 
-        if(data.cityId) {
+        if(data.city) {
             await CityModel.updateOne({
-                _id: data.cityId
+                _id: data.city
             }, {
                 $push: {
                     zones: doc._id.toString()

@@ -14,7 +14,7 @@ export class Zone implements BaseModel {
     name: string;
 
     @prop({ ref : 'City' })
-    city?: Ref<City>;
+    city: Ref<City>;
 
     @prop({required : true})
     @Field(type => MapBounds, {description: "Area geografica rectangular que define las delimitaciones de la zona"})

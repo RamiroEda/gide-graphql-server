@@ -7,8 +7,8 @@ export class AddZoneInput implements Omit<Zone, "_id" | "createdAt" | "updatedAt
     @Field({description: "Nombre de la zona"})
     name: string;
 
-    @Field(type => ID, {nullable: true, description: "Identificador de la ciudad a la que pertenece"})
-    cityId?: string;
+    @Field(type => ID, {description: "Identificador de la ciudad a la que pertenece"})
+    city: string;
 
     @Field(type => MapBoundsInput, {description: "Area geografica rectangular que define las delimitaciones de la zona"})
     bounds: MapBoundsInput;
